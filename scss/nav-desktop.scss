@@ -1,0 +1,303 @@
+//
+// Desktop Header
+//
+
+.desktop-header {
+  background: linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0.4) 90%,
+    transparent 100%
+  );
+  display: block;
+  position: fixed;
+  top: 0;
+  padding: 10px 0;
+  z-index: 10;
+  width: 100%;
+  transition: var(--zifa-transition);
+
+  img.desktop-logo {
+    width: 150px;
+    transition: transform 0.5s ease;
+
+    &:hover {
+      opacity: 0.7;
+      transform: rotate(360deg);
+    }
+  }
+
+  .social {
+    padding-right: 20px;
+    text-decoration: none;
+  }
+  a.social {
+    padding-right: 20px;
+    text-decoration: none;
+
+    i {
+      color: var(--bs-white);
+      font-size: 1.5rem;
+      transition: var(--zifa-transition);
+    }
+
+    &:hover {
+      i {
+        color: var(--bs-secondary);
+      }
+    }
+  }
+
+  .header-links-wrap {
+    // display: none;
+    // border-bottom: 1px solid #00000033;
+    border-bottom: 1px solid #fff;
+    // padding-bottom: 0.25rem;
+  }
+
+  .margin-bottom {
+    margin-bottom: 3rem;
+  }
+
+  .external-menu .menu-item {
+    text-transform: capitalize;
+    font-size: 1rem;
+  }
+}
+
+@media only screen and (max-width: 992px) {
+  .desktop-header {
+    display: none;
+  }
+}
+
+//
+// External Menu - base uses .nav.menu
+//
+
+nav.menu.external-menu {
+  > ul {
+    font-size: 0.8rem;
+    margin-top: 50px;
+  }
+}
+
+//
+// Navigation Menu
+//
+nav.menu {
+  display: flex;
+
+  > ul {
+    display: flex;
+    justify-content: flex-end;
+    width: 100%;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+
+    &:before,
+    &:after {
+      content: "";
+      display: table;
+    }
+
+    &:after {
+      clear: both;
+    }
+
+    > li {
+      padding: 0;
+      margin: 0;
+      position: relative;
+
+      // NOTE: Adjust sub-menu position for last item
+      &.last-child ul {
+        width: max-content;
+        left: -100%;
+        position: absolute;
+        padding: 0;
+        margin: 0;
+      }
+
+      a {
+        color: var(--bs-white);
+        // border-bottom: 5px solid transparent;
+        display: block;
+        text-decoration: none;
+        padding: 20px 10px;
+        position: relative;
+
+        &:hover,
+        &[aria-current="page"] {
+          color: var(--bs-secondary);
+          // border-bottom: 5px solid var(--bs-secondary);
+
+          &:after {
+            content: " ";
+            position: absolute;
+            left: 45%;
+            bottom: 0;
+            height: 10px;
+            width: 10px;
+            background: var(--bs-secondary);
+            border-radius: 50%;
+            transition: var(--zifa-transition);
+          }
+        }
+      }
+
+      // Second Level - Mega Menu
+      > ul.mega-menu {
+        display: none;
+        width: fit-content;
+        max-width: 600px;
+        background-color: var(--bs-white);
+        padding: 20px;
+        position: absolute;
+        z-index: 99;
+        left: 0;
+        right: 0;
+        margin: 0;
+        list-style: none;
+        -webkit-box-shadow: 0px 2px 20px -5px rgba(123, 123, 123, 0.75);
+        -moz-box-shadow: 0px 2px 20px -5px rgba(123, 123, 123, 0.75);
+        box-shadow: 0px 2px 20px -5px rgba(123, 123, 123, 0.75);
+
+        &:before,
+        &:after {
+          content: "";
+          display: table;
+        }
+
+        &:after {
+          clear: both;
+        }
+
+        > li {
+          margin: 0;
+          padding-bottom: 0;
+          list-style: none;
+          width: 50%;
+          background: none;
+          float: left;
+
+          a {
+            color: var(--bs-primary);
+            border-bottom: 5px solid transparent;
+            padding: 0.2em 0;
+            width: 95%;
+            display: block;
+            &:hover {
+              color: var(--bs-secondary);
+            }
+          }
+
+          > ul {
+            display: block;
+            padding: 0;
+            list-style: none;
+
+            &:before,
+            &:after {
+              content: "";
+              display: table;
+            }
+
+            &:after {
+              clear: both;
+            }
+
+            > li {
+              float: left;
+              width: 100%;
+              padding: 10px 0;
+              margin: 0;
+              // font-size: .8em;
+
+              a {
+                border: 0;
+              }
+            }
+          }
+        }
+      }
+
+      // Second Level - Normal Menu
+      > ul {
+        display: none;
+        width: 100%;
+        background-color: var(--bs-white);
+        padding: 20px;
+        position: absolute;
+        z-index: 99;
+        left: 0;
+        margin: 0;
+        list-style: none;
+        -webkit-box-shadow: 0px 2px 20px -5px rgba(123, 123, 123, 0.75);
+        -moz-box-shadow: 0px 2px 20px -5px rgba(123, 123, 123, 0.75);
+        box-shadow: 0px 2px 20px -5px rgba(123, 123, 123, 0.75);
+
+        &.normal-sub {
+          width: max-content;
+          padding: 0;
+          margin: 0;
+
+          > li {
+            width: 100%;
+            padding: 0;
+            margin: 0;
+
+            a {
+              color: var(--bs-primary);
+              background-color: var(--bs-white);
+              border: 0;
+              padding: 10px;
+              margin: 0;
+
+              &:hover {
+                color: var(--bs-black);
+                background-color: var(--bs-secondary);
+
+                &:after {
+                  content: none !important;
+                }
+              }
+
+              &[aria-current="page"] {
+                color: var(--bs-white);
+                background-color: var(--bs-black);
+
+                &:after {
+                  content: none !important;
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// Current Page color
+nav.menu > ul > li > a:hover,
+nav.menu > ul > li > a[aria-current="page"],
+nav.menu > ul > li.current_page_parent > a {
+  color: var(--bs-secondary);
+  // border-bottom: 5px solid var(--bs-secondary) !important;
+
+  &:after {
+    content: " ";
+    position: absolute;
+    left: 45%;
+    bottom: 0;
+    height: 10px;
+    width: 10px;
+    background: var(--bs-secondary);
+    border-radius: 50%;
+    transition: var(--zifa-transition);
+  }
+}

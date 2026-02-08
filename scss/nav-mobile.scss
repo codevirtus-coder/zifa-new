@@ -1,0 +1,453 @@
+// 
+// Mobile Header
+// 
+.mobile-header {
+    display: block;
+    transition: var(--zifa-transition);
+    
+    img.mobile-logo {
+        height: 50px;
+        margin: 10px 0 0 10px;
+    }
+}
+
+@media only screen and (min-width: 993px) {
+    .mobile-header {
+        display: none;
+    }
+}
+
+
+main,
+header {
+    // position: relative;
+    transition: var(--zifa-transition);
+
+    /* Force Hardware Acceleration in WebKit */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    will-change: transform;
+}
+
+// @media only screen and (max-width: 767px) {
+@media only screen and (max-width: 1199px) {
+    main.nav-is-visible,
+    header.nav-is-visible {
+        -webkit-transform: translateX(-130px);
+        -moz-transform: translateX(-130px);
+        -ms-transform: translateX(-130px);
+        -o-transform: translateX(-130px);
+        transform: translateX(-130px);
+    }
+}
+
+header {
+    background-color: var(--bs-white);
+    height: 70px;
+
+    .row {
+        margin-right: 0; // Prevent x overflow
+    }
+}
+
+
+
+// 
+// Open Menu
+//
+a.mobile-nav-trigger {
+    background-color: var(--bs-primary);
+    
+    /* hide text */
+    color: transparent !important;
+
+    display: block;
+    width: 70px;
+    height: 70px;
+    overflow: hidden;
+    white-space: nowrap;
+    z-index: 3;
+    position: absolute;
+    top: 0;
+    right: 0;
+
+    /* hamburger icon in CSS */
+    span,
+    span::before,
+    span::after {
+        position: absolute;
+        display: inline-block;
+        height: 5px;
+        width: 50px;
+        background: var(--bs-white);
+    }
+
+    /* line in the center */
+    span {
+        position: absolute;
+        top: 45%;
+        right: 10px;
+        -webkit-transition: background 0.3s 0.3s;
+        -moz-transition: background 0.3s 0.3s;
+        transition: background 0.3s 0.3s;
+
+        /* other 2 lines */
+        &::before,
+        &::after {
+            content: '';
+            right: 0;
+
+            /* Force Hardware Acceleration in WebKit */
+            -webkit-transform: translateZ(0);
+            -moz-transform: translateZ(0);
+            -ms-transform: translateZ(0);
+            -o-transform: translateZ(0);
+            transform: translateZ(0);
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+            -webkit-transform-origin: 0% 50%;
+            -moz-transform-origin: 0% 50%;
+            -ms-transform-origin: 0% 50%;
+            -o-transform-origin: 0% 50%;
+            transform-origin: 0% 50%;
+            -webkit-transition: -webkit-transform 0.5s 0.5s;
+            -moz-transition: -moz-transform 0.5s 0.5s;
+            transition: transform 0.5s 0.5s;
+        }
+
+        // Top Line
+        &::before {
+            top: -15px;
+        }
+
+        // Bottom Line
+        &::after {
+            top: 15px;
+        }
+    }
+}
+
+
+
+
+
+// Action when menu open
+a.mobile-nav-trigger.nav-is-visible span {
+
+    /* hide line in the center */
+    background: rgba(46, 50, 51, 0);
+
+    // move trigger
+    right: 5px;
+
+    &::before,
+    &::after {
+        // Keep other tow lines visible
+        background: var(--bs-white);
+    }
+
+    &::before {
+        -webkit-transform: translateX(4px) translateY(-3px) rotate(45deg);
+        -moz-transform: translateX(4px) translateY(-3px) rotate(45deg);
+        -ms-transform: translateX(4px) translateY(-3px) rotate(45deg);
+        -o-transform: translateX(4px) translateY(-3px) rotate(45deg);
+        transform: translateX(4px) translateY(-3px) rotate(45deg);
+    }
+
+    &::after {
+        -webkit-transform: translateX(4px) translateY(2px) rotate(-45deg);
+        -moz-transform: translateX(4px) translateY(2px) rotate(-45deg);
+        -ms-transform: translateX(4px) translateY(2px) rotate(-45deg);
+        -o-transform: translateX(4px) translateY(2px) rotate(-45deg);
+        transform: translateX(4px) translateY(2px) rotate(-45deg);
+    }
+}
+
+
+
+
+
+// 
+// Menu Styling
+// 
+.mobile-nav,
+.mobile-nav ul {
+    position: fixed;
+    top: 0;
+    right: 0;
+    height: 100%;
+    width: 260px;
+    background: #201e2a;
+    padding: 0;
+    margin: 0;
+    overflow: auto;
+    -webkit-overflow-scrolling: touch;
+    z-index: 1;
+    /* Force Hardware Acceleration in WebKit */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+    -webkit-transform: translateX(0);
+    -moz-transform: translateX(0);
+    -ms-transform: translateX(0);
+    -o-transform: translateX(0);
+    transform: translateX(0);
+    -webkit-transition: -webkit-transform 0.5s;
+    -moz-transition: -moz-transform 0.5s;
+    transition: transform 0.5s;
+
+    // Removes ul li Bullet listing
+    li::before {
+        content: none;
+    }
+}
+
+.mobile-nav a,
+.mobile-nav a:link,
+.mobile-nav a:visited,
+.mobile-nav ul a,
+.mobile-nav ul a:link,
+.mobile-nav ul a:visited {
+    border-bottom: 1px solid #3a3f40;
+    color: var(--bs-white);
+    display: block;
+    line-height: normal;
+    padding: 15px 20px;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    /* Force Hardware Acceleration in WebKit */
+    -webkit-transform: translateZ(0);
+    -moz-transform: translateZ(0);
+    -ms-transform: translateZ(0);
+    -o-transform: translateZ(0);
+    transform: translateZ(0);
+
+    // will-change: transform, opacity;
+    -webkit-transition: -webkit-transform 0.5s;
+    -moz-transition: -moz-transform 0.5s;
+    transition: transform 0.5s;
+
+    &:hover {
+        color: var(--bs-secondary);
+    }
+}
+
+.mobile-nav.is-hidden,
+.mobile-nav ul.is-hidden {
+    /* secondary navigations hidden by default */
+    -webkit-transform: translateX(100%);
+    -moz-transform: translateX(100%);
+    -ms-transform: translateX(100%);
+    -o-transform: translateX(100%);
+    transform: translateX(100%);
+}
+
+.mobile-nav.moves-out>li>a,
+.mobile-nav ul.moves-out>li>a {
+    // Push the navigation items to the left - and lower down opacity - when secondary nav slides in
+    -webkit-transform: translateX(-100%);
+    -moz-transform: translateX(-100%);
+    -ms-transform: translateX(-100%);
+    -o-transform: translateX(-100%);
+    transform: translateX(-100%);
+    opacity: 0;
+}
+
+@media only screen and (max-width: 992px) {
+    .mobile-nav {
+        /* by default .mobile-nav is hidden - trick for iOS devices where you can see the navigation if you pull down */
+        // visibility: hidden;
+        display: none;
+        transition: var(--transition);
+    }
+
+    .mobile-nav.nav-is-visible {
+        // visibility: visible;
+        display: block;
+        transition: var(--transition);
+    }
+}
+
+@media only screen and (min-width: 993px) {
+    .mobile-nav {
+        position: static;
+        display: none;
+        padding: 0;
+        margin: 0;
+        height: auto;
+        width: auto;
+        float: right;
+        overflow: visible;
+        background: transparent;
+    }
+
+    .mobile-nav::after {
+        clear: both;
+        content: "";
+        display: table;
+    }
+
+    .mobile-nav.moves-out>li>a {
+        /* reset mobile style */
+        -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
+        -ms-transform: translateX(0);
+        -o-transform: translateX(0);
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .mobile-nav ul {
+        position: static;
+        height: auto;
+        width: auto;
+        background: transparent;
+        overflow: visible;
+        z-index: 3;
+    }
+
+    .mobile-nav ul.is-hidden {
+        // Reset mobile style
+        -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
+        -ms-transform: translateX(0);
+        -o-transform: translateX(0);
+        transform: translateX(0);
+    }
+
+    .mobile-nav ul.moves-out>li>a {
+        // Reset mobile style
+        -webkit-transform: translateX(0);
+        -moz-transform: translateX(0);
+        -ms-transform: translateX(0);
+        -o-transform: translateX(0);
+        transform: translateX(0);
+        opacity: 1;
+    }
+
+    .mobile-nav>li {
+        position: relative;
+        float: left;
+        margin-left: 2em;
+        list-style: none;
+    }
+
+    .mobile-nav>li>a,
+    .mobile-nav>li>a:link,
+    .mobile-nav>li>a:visited {
+        // Main navigation buttons style
+        position: relative;
+        display: inline-block;
+        height: 80px;
+        line-height: 80px;
+        padding: 0 10px;
+        color: var(--bs-primary);
+        overflow: visible;
+        border-bottom: none;
+        transition: var(--transition);
+
+        &:hover {
+            color: var(--bs-secondary);
+        }
+
+        .selected {
+            color: var(--bs-secondary);
+            box-shadow: inset 0 -2px 0 var(--bs-secondary);
+        }
+    }
+
+    .mobile-nav .go-back {
+        display: none;
+    }
+}
+
+
+
+
+
+
+
+
+// Arrows Mobile
+.has-children>a {
+    padding-right: 40px;
+}
+
+.has-children>a,
+.go-back a {
+    position: relative;
+}
+
+.has-children>a::before,
+.has-children>a::after,
+.go-back a::before,
+.go-back a::after {
+    // Arrow icon in CSS - for element with nested unordered lists
+    content: '';
+    position: absolute;
+    top: 50%;
+    margin-top: -1px;
+    display: inline-block;
+    height: 2px;
+    width: 10px;
+    background: var(--bs-white);
+    -webkit-backface-visibility: hidden;
+    backface-visibility: hidden;
+}
+
+.has-children>a::before,
+.go-back a::before {
+    -webkit-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -ms-transform: rotate(45deg);
+    -o-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.has-children>a::after,
+.go-back a::after {
+    -webkit-transform: rotate(-45deg);
+    -moz-transform: rotate(-45deg);
+    -ms-transform: rotate(-45deg);
+    -o-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}
+
+// Arrow goes on the right side - children navigation
+.has-children>a::before,
+.has-children>a::after {
+    right: 20px;
+    -webkit-transform-origin: 9px 50%;
+    -moz-transform-origin: 9px 50%;
+    -ms-transform-origin: 9px 50%;
+    -o-transform-origin: 9px 50%;
+    transform-origin: 9px 50%;
+}
+
+.mobile-nav .go-back a {
+    padding-left: 40px;
+}
+
+// Arrow goes on the left side - go back button
+.mobile-nav .go-back a::before,
+.mobile-nav .go-back a::after {
+    left: 20px;
+    -webkit-transform-origin: 1px 50%;
+    -moz-transform-origin: 1px 50%;
+    -ms-transform-origin: 1px 50%;
+    -o-transform-origin: 1px 50%;
+    transform-origin: 1px 50%;
+}
+
+// Push "menu" title on go back button
+li.has-children>ul>li.go-back>a {
+    padding-left: 50px;
+}

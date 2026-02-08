@@ -1,0 +1,10 @@
+a.list-group-item-action {
+    color: var(--bs-primary) !important;
+    transition: var(--zifa-transition) !important;
+
+    &:not(.active):hover,
+    &:not(.active):focus {
+        color: var(--bs-white) !important;
+        background-color: var(--bs-primary) !important;
+    }
+}

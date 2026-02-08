@@ -1,0 +1,17 @@
+.wp-block-table td,
+.wp-block-table th {
+    border: 1px solid var(--bs-gray-300);
+    padding: 12px 15px;
+    vertical-align: middle;
+}
+
+.wp-block-table th {
+    background-color: var(--bs-primary);
+    color: var(--bs-white);
+}
+
+.wp-block-table tbody tr td,
+.wp-block-table tbody tr:first-child td {
+    background-color: var(--bs-white);
+    color: var(--bs-black);
+}

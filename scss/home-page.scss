@@ -1,0 +1,19 @@
+.home-about,
+.our-partners,
+.home-blog {
+    padding: 50px 0;
+}
+
+.our-partners {
+    background-color: var(--bs-gray-200);
+    position: relative;
+    overflow: hidden;
+}
+
+@include media-breakpoint-up(sm) {
+    .home-about,
+    .our-partners,
+    .home-blog {
+        padding: 80px 0;
+    }
+}

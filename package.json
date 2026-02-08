@@ -1,0 +1,21 @@
+{
+	"name": "zifa",
+	"version": "1.5.5",
+	"description": "ZIFA, a custom theme developed by Mehluli Hikwa",
+	"author": "Mehluli Hikwa",
+	"scripts": {
+		"css-prod": "sass --no-source-map --watch scss/_entry.scss:css/app.css --style compressed",
+		"css-dev": "sass --no-source-map --watch scss/_entry.scss:css/app.css",
+		"js-prod": "webpack --mode=production --watch",
+		"js-dev": "webpack --mode=development --watch"
+	},
+	"devDependencies": {
+		"sass": "^1.91.0",
+		"webpack": "^5.101.3",
+		"webpack-cli": "^6.0.1"
+	},
+	"dependencies": {
+		"bootstrap": "^5.3.8",
+		"jquery": "^3.7.1"
+	}
+}

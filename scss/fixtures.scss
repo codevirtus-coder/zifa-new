@@ -1,0 +1,549 @@
+/* Panel container */
+.hc-mini-panel--calendar,
+.hc-countdown-panel,
+.hc-mini-panel--table {
+  background: #fff;
+}
+
+.hc-mini-panel__head {
+  background: var(--bs-primary);
+  padding: 6px 10px;
+}
+
+.hc-mini-panel__title {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+}
+
+.hc-mini-panel__body {
+  padding: 6px;
+}
+
+/* each row */
+.hc-mini-row {
+  display: grid;
+  grid-template-columns: 64px 1fr 64px;
+  gap: 8px;
+  align-items: center;
+  padding: 10px 8px;
+
+  margin-bottom: 6px;
+  text-decoration: none;
+  color: inherit;
+  background: #fff;
+}
+
+.hc-mini-row:hover {
+  background: #fafafa;
+  text-decoration: none;
+  color: inherit;
+}
+
+.hc-mini-row__side {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* logo/flag size */
+.hc-mini-row .fi.fis {
+  font-size: 32px;
+  line-height: 1;
+}
+
+/* middle text */
+.hc-mini-row__date {
+  text-align: center;
+  font-size: 13px;
+  font-weight: 700;
+  color: #222;
+  line-height: 1.1;
+  margin-bottom: 4px;
+}
+
+.hc-mini-row__meta {
+  text-align: center;
+  font-size: 20px;
+  font-weight: 900;
+  color: #111;
+  line-height: 1.1;
+  margin-bottom: 6px;
+}
+
+.hc-mini-row__score {
+  /* score should feel bold */
+}
+
+.hc-mini-row__match {
+  text-align: center;
+  font-size: 14px;
+  font-weight: 900;
+  color: var(--bs-primary);
+  letter-spacing: 0.2px;
+}
+
+.hc-mini-empty {
+  padding: 14px;
+  text-align: center;
+  color: #fff;
+  font-weight: 700;
+  // background: #fff;
+}
+
+/* Make all 3 panels equal height in the row */
+.hc-mini-panel {
+  width: 100%;
+}
+
+/* Calendar styles */
+.hc-cal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 8px 6px 10px;
+}
+
+.hc-cal__title {
+  font-weight: 900;
+  font-size: 14px;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  text-align: center;
+  flex: 1;
+}
+
+.hc-cal__nav {
+  width: 34px;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px;
+  color: #111;
+  font-weight: 900;
+}
+
+.hc-cal__grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 6px;
+  padding: 6px;
+}
+
+.hc-cal__dow {
+  text-align: center;
+  font-weight: 900;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.75);
+  padding: 4px 0;
+}
+
+.hc-cal__cell {
+  position: relative;
+  min-height: 40px;
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  background: #fff;
+  display: flex;
+  align-items: flex-start;
+  justify-content: flex-start;
+  padding: 6px;
+}
+
+.hc-cal__cell--blank {
+  border-color: transparent;
+  background: transparent;
+}
+
+.hc-cal__num {
+  font-weight: 800;
+  font-size: 13px;
+  color: #111;
+}
+
+.hc-cal__cell.is-today {
+  outline: 2px solid rgba(0, 0, 0, 0.35);
+}
+
+.hc-cal__cell.has-match {
+  background: rgba(0, 0, 0, 0.03);
+}
+
+.hc-cal__dot {
+  position: absolute;
+  bottom: 6px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #0b7a34; /* green dot */
+}
+
+.hc-cal__legend {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 10px 12px;
+  font-size: 12px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+.hc-cal__legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #0b7a34;
+  display: inline-block;
+}
+
+/* Calendar loading state */
+.hc-cal-wrap.is-loading {
+  pointer-events: none;
+}
+
+/* Countdown styling (minimal, fits the card) */
+.hc-cd {
+  margin-top: 8px;
+  display: flex;
+  justify-content: center;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+.hc-cd__item {
+  text-align: center;
+  min-width: 48px;
+}
+
+.hc-cd__num {
+  display: block;
+  font-weight: 900;
+  font-size: 16px;
+  line-height: 1;
+  color: #111;
+}
+
+.hc-cd__lab {
+  display: block;
+  font-size: 11px;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.65);
+  margin-top: 2px;
+}
+
+.hc-cd--tba {
+  margin-top: 8px;
+  text-align: center;
+  font-weight: 800;
+  font-size: 12px;
+  color: rgba(0, 0, 0, 0.65);
+  padding-top: 8px;
+  border-top: 1px solid rgba(0, 0, 0, 0.12);
+}
+
+.hc-cd--live {
+  width: 100%;
+  text-align: center;
+  font-weight: 900;
+  font-size: 12px;
+  padding: 6px 8px;
+}
+
+/* Countdown standalone panel layout */
+.hc-nextmatch {
+  text-align: center;
+  padding: 6px 4px 2px;
+}
+
+.hc-nextmatch__match {
+  font-weight: 900;
+  text-transform: uppercase;
+  letter-spacing: 0.3px;
+  color: var(--bs-primary);
+  margin: 6px 0 10px;
+  font-size: 14px;
+}
+
+.hc-cd-standalone {
+  display: flex;
+  justify-content: center;
+  gap: 16px;
+  padding: 10px 8px;
+  background: #fff;
+}
+
+.hc-cd-standalone__item {
+  min-width: 64px;
+  text-align: center;
+}
+
+.hc-cd-standalone__num {
+  font-weight: 900;
+  font-size: 22px;
+  line-height: 1;
+  color: #111;
+}
+
+.hc-cd-standalone__lab {
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.65);
+  margin-top: 4px;
+}
+
+.hc-nextmatch__meta {
+  margin-top: 10px;
+  font-size: 12px;
+  font-weight: 800;
+  color: rgba(0, 0, 0, 0.7);
+}
+
+/* Calendar loading state */
+.hc-cal-wrap.is-loading {
+  pointer-events: none;
+}
+
+/* ===============================
+   LEAGUE STANDINGS
+================================ */
+
+/* Panel border + background */
+.hc-mini-panel {
+  // border: 1px solid #cfcfcf;
+  // background: #fff;
+}
+
+/* Title typography */
+.hc-mini-panel .hc-mini-panel__title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: #fff;
+}
+
+.hc-mini-panel .hc-mini-panel__body {
+  padding: 0;
+}
+
+/* Wrapper */
+.hc-standings-wrap {
+  overflow-x: auto;
+}
+
+/* Table base */
+.hc-standings-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  color: #111;
+}
+
+/* Header row (light grey) */
+.hc-standings-table thead th {
+  background: #efefef;
+  color: #111;
+  font-weight: 700;
+  padding: 7px 6px;
+  border-bottom: 1px solid #cfcfcf;
+  text-align: center;
+  white-space: nowrap;
+}
+
+/* Cells */
+.hc-standings-table tbody td {
+  padding: 7px 6px;
+  border-bottom: 1px solid #e5e5e5;
+  text-align: center;
+  vertical-align: middle;
+  white-space: nowrap;
+}
+
+/* Outer table border */
+.hc-standings-table {
+  border-top: 0;
+}
+.hc-standings-table tbody tr:last-child td {
+  border-bottom: 0;
+}
+
+/* Pos column */
+.hc-standings-table th:first-child,
+.hc-standings-table td:first-child {
+  width: 44px;
+}
+
+/* Club column left aligned */
+.hc-standings-table th:nth-child(2),
+.hc-standings-table td:nth-child(2) {
+  text-align: left;
+  width: 220px;
+  padding-left: 10px;
+}
+
+/* Make points a little stronger */
+.hc-standings-table td:last-child strong {
+  font-weight: 700;
+}
+
+/* Optional: subtle hover like many tables */
+.hc-standings-table tbody tr:hover {
+  background: #fafafa;
+}
+
+/* Notes under club (you output a div) */
+.hc-standings-table td:nth-child(2) div {
+  margin-top: 2px;
+  font-size: 12px;
+  color: #666;
+}
+
+.hc-standings-table .hc-club-icon {
+  width: 18px;
+  height: 18px;
+  object-fit: contain;
+  margin-right: 8px;
+  vertical-align: middle;
+}
+
+.hc-cal__nav,
+.hc-cal__nav-btn {
+  width: auto !important;
+  height: auto !important;
+  padding: 0 !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.6);
+  text-decoration: none;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.hc-cal__nav:hover,
+.hc-cal__nav-btn:hover {
+  color: rgba(0, 0, 0, 0.95);
+  text-decoration: underline;
+}
+
+/* Keep focus accessible */
+.hc-cal__nav:focus,
+.hc-cal__nav-btn:focus {
+  outline: none;
+}
+.hc-cal__nav:focus-visible,
+.hc-cal__nav-btn:focus-visible {
+  outline: 2px solid rgba(0, 0, 0, 0.25);
+  outline-offset: 2px;
+  border-radius: 2px;
+}
+
+.hc-cal__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.hc-cal__title {
+  text-decoration: none;
+}
+
+.hc-cal__bottomnav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 10px 10px;
+  border-top: 1px solid rgba(0, 0, 0, 0.08);
+  margin-top: 6px;
+}
+
+.hc-cal__bottomnav .hc-cal__nav-btn {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.65);
+  text-decoration: none;
+  line-height: 1;
+}
+
+.hc-cal__bottomnav .hc-cal__nav-btn:hover {
+  color: rgba(0, 0, 0, 0.95);
+  text-decoration: underline;
+}
+
+.hc-mini-panel--calendar .hc-cal__top .hc-cal__nav,
+.hc-mini-panel--calendar .hc-cal__top .hc-cal__nav-btn {
+  display: none !important;
+}
+
+.hc-card {
+  overflow: hidden;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+
+.hc-standings-footer {
+  background: #efefef;
+  padding: 8px 10px;
+  text-align: right;
+}
+
+.hc-view-full-table {
+  font-size: 13px;
+  font-weight: 700;
+  color: rgba(0, 0, 0, 0.55);
+  text-decoration: none;
+}
+
+.hc-view-full-table:hover {
+  color: rgba(0, 0, 0, 0.85);
+  text-decoration: underline;
+}
+
+.hc-loading {
+  padding: 12px;
+  font-weight: 600;
+  opacity: 0.8;
+  color: #fff;
+}
+
+/* optional small spinner */
+.hc-loading:before {
+  content: "";
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  margin-right: 8px;
+  border-radius: 50%;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  vertical-align: -2px;
+  animation: hcspin 0.7s linear infinite;
+  color: #fff;
+}
+
+@keyframes hcspin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+#hc-fixtures-panel.is-loading,
+#hc-results-panel.is-loading {
+  pointer-events: none;
+  color: #fff;
+}

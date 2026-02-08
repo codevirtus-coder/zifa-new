@@ -1,0 +1,102 @@
+.wpcf7-form {
+    width: 100%;
+}
+
+.wpcf7-form p {
+    margin-bottom: 1rem;
+    /* Adjust spacing if needed */
+}
+
+.wpcf7-form input[type="text"],
+.wpcf7-form input[type="email"],
+.wpcf7-form input[type="tel"],
+.wpcf7-form input[type="url"],
+.wpcf7-form input[type="password"],
+.wpcf7-form input[type="search"],
+.wpcf7-form input[type="date"],
+.wpcf7-form input[type="number"],
+.wpcf7-form textarea,
+.wpcf7-form select {
+    width: 100%;
+    max-width: 100%;
+    display: block;
+}
+
+.wpcf7-submit {
+    @extend .btn;
+    @extend .btn-primary;
+    // font-size: 1.2rem !important;
+    // width: auto !important;
+    // padding: 10px 20px !important;
+}
+
+.wpcf7-form input[type="submit"] {
+    width: 100%;
+    /* Optional: Make the submit button full width */
+
+    // &::before {
+    //     content: '';
+    //     display: inline-block;
+    //     width: 40px;
+    //     height: 30px;
+    //     vertical-align: middle;
+    //     background-image: url("data:image/svg+xml,%3Csvg width='62' height='56' viewBox='0 0 62 56' fill='none' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M0 9.27937C0 4.61484 3.78135 0.833496 8.44587 0.833496H52.8547C58.1639 0.833496 62.1565 5.6741 61.1463 10.8863L53.8254 48.6611C53.0558 52.6321 49.5788 55.5 45.5338 55.5H8.44587C3.78135 55.5 0 51.7187 0 47.0541V9.27937Z' fill='%230E195A' /%3E%3Cpath d='M21 19L28.8178 27.5996C29.2046 28.0251 29.2046 28.6749 28.8178 29.1005L21 37.7' stroke='white' stroke-width='3' stroke-linecap='round' /%3E%3Cpath d='M29.5 19L37.3178 27.5996C37.7046 28.0251 37.7046 28.6749 37.3178 29.1005L29.5 37.7' stroke='white' stroke-width='3' stroke-linecap='round' /%3E%3C/svg%3E");
+    //     background-size: contain;
+    //     background-repeat: no-repeat;
+    // }
+}
+
+.wpcf7-form-control {
+    @extend .form-control;
+}
+
+.form-label {
+    color: var(--bs-black);
+    font-weight: 500;
+    margin-top: .5em;
+    margin-bottom: .2rem;
+}
+
+
+
+// Success Message
+.wpcf7 form.sent .wpcf7-response-output {
+    border-color: var(--bs-success);
+    border: var(--bs-success);
+    background-color: var(--bs-success);
+    color: var(--bs-white);
+    padding: 20px;
+}
+
+// Invalid/unaccepted Message
+.wpcf7 form.invalid .wpcf7-response-output,
+.wpcf7 form.unaccepted .wpcf7-response-output {
+    border-color: var(--bs-warning);
+    border: var(--bs-warning);
+    background-color: var(--bs-warning);
+    color: var(--bs-black);
+    padding: 20px;
+    margin: 20px 0;
+}
+
+
+
+
+
+
+
+
+
+
+// Newsletter - Mailcimp
+.mailchimp form {
+    .input#mc-embedded-subscribe {
+        background-color: red !important;
+        color: var(--bs-white) !important;
+        text-decoration: none !important;
+    }
+
+    input#mce-EMAIL {
+        height: 40px !important;
+    }
+}

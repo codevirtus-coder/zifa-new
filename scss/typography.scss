@@ -1,0 +1,102 @@
+// @import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100..900;1,100..900&display=swap');
+// font-family: "Montserrat", sans-serif;
+
+@import url("https://fonts.googleapis.com/css2?family=Archivo:ital,wght@0,100..900;1,100..900&display=swap");
+// font-family: "Archivo", sans-serif;
+
+*,
+*:after,
+*:before {
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+html * {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  font-size: 100%;
+  // font-family: "Montserrat", sans-serif;
+  font-family: "Archivo", sans-serif;
+  color: #1a1a1a;
+  margin: 0 auto;
+  overflow-x: hidden;
+}
+
+body,
+html {
+  height: 100%;
+}
+
+:root {
+  --zifa-transition: all 0.5s;
+}
+
+a {
+  color: var(--bs-secondary);
+  font-weight: 500;
+  text-decoration: none;
+  transition: var(--zifa-transition);
+
+  &:hover {
+    color: var(--bs-primary);
+  }
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  color: var(--bs-black);
+  font-weight: 600;
+}
+
+// p {
+//     font-weight: 500;
+// }
+
+ul.wp-block-list {
+  margin-top: 0;
+  margin-bottom: 1rem;
+  padding-left: 3rem;
+}
+
+// TODO: Improve this selector to avoid affecting other blocks
+.wp-block-columns {
+  @extend .container;
+  padding: 10px 0;
+}
+
+// TODO: Additional Custom Styles on green section
+//
+// Sections
+//
+.green-section {
+  @extend .p-5;
+  background-color: var(--bs-primary);
+  // background-position: bottom center;
+  // background-repeat: repeat;
+  // color: var(--white);
+  // position: relative;
+
+  // .overlay {
+  //     background-color: rgba(3, 111, 60, .6);
+  // }
+
+  .heading-text {
+    color: var(--bs-white);
+  }
+}
+
+//
+// Headings
+//
+.heading-text {
+  @extend .mb-3, .display-6, .fw-bold, .text-uppercase;
+  color: var(--bs-black);
+}

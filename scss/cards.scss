@@ -1,0 +1,255 @@
+/********************************
+
+    1. Deafult Card
+	2. Landing Page Block Card
+    3. Matches Card
+    4. Teams Card
+    5. Fixture & Results
+
+********************************/
+
+//
+// 1. Deafult Card
+//
+.card {
+  // @extend .h-100;
+  border: none;
+  border-bottom: 1px solid var(--bs-gray-300);
+  border-radius: 0;
+  margin-bottom: 30px;
+
+  transition: var(--zifa-transition);
+
+  &:hover {
+    box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-title {
+    @extend .text-uppercase, .fw-bold;
+  }
+
+  a {
+    .card-title {
+      @extend .text-black;
+      transition: var(--zifa-transition);
+
+      &:hover {
+        @extend .text-secondary;
+      }
+    }
+
+    img {
+      &:hover {
+        opacity: 0.8;
+      }
+    }
+  }
+
+  .card-text {
+    display: -webkit-box; // flexbox-style layout
+    -webkit-box-orient: vertical; // Arrange content vertically
+    -webkit-line-clamp: 3;
+    line-clamp: 3;
+    overflow: hidden;
+    text-overflow: ellipsis; // Add ellipsis (...)
+    margin-bottom: 10px;
+  }
+
+  a.card-link {
+    @extend .text-uppercase;
+    color: var(--bs-primary);
+    font-weight: 600;
+
+    &:hover {
+      color: var(--bs-secondary);
+    }
+
+    &::after {
+      @extend .ps-2, .fw-bolder;
+      content: "\F280";
+      display: inline-block;
+      font-family: "bootstrap-icons" !important;
+      position: relative;
+      top: 1.5px;
+    }
+  }
+}
+.margin-bottom {
+  margin-bottom: 4rem;
+}
+
+.card.players {
+  @extend .h-100;
+  border: none;
+  border-radius: 0;
+  margin-bottom: 30px;
+  transition: var(--zifa-transition);
+
+  &:hover {
+    box-shadow: 0 0 8px 2px rgba(0, 0, 0, 0.2);
+  }
+
+  .card-body {
+    padding-bottom: 0 !important;
+  }
+
+  .card-title {
+    @extend .text-secondary, .text-uppercase, .fw-bold;
+  }
+
+  p.card-text {
+    color: var(--bs-white);
+    margin-bottom: 0;
+  }
+}
+
+//
+// 2. Landing Page Block Card
+//
+.card.content {
+  @extend .h-100;
+  border: none;
+  margin-bottom: 0;
+
+  .card-img {
+    border-radius: 0;
+  }
+
+  .card-img-overlay {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 0;
+  }
+
+  .card-title {
+    color: var(--bs-white) !important;
+  }
+}
+
+//
+// 3. Matches Card
+//
+.card.matches {
+  @extend .h-100;
+  border-radius: 10px;
+  background-color: var(--bs-gray-100);
+
+  a.card-link {
+    @extend .text-uppercase;
+    background-color: var(--bs-secondary);
+    color: var(--bs-black);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+    font-weight: 600;
+    width: 100%;
+    position: absolute;
+    bottom: -1px;
+    text-align: center;
+
+    &:hover {
+      background-color: var(--bs-black);
+      color: var(--bs-white);
+    }
+  }
+}
+
+//
+// 4. Teams Card
+//
+.card.teams {
+  @extend .h-100;
+  // background-repeat: no-repeat;
+  // background-size: cover;
+  background-color: var(--bs-gray-100);
+  border-radius: 10px;
+  border: none;
+  margin-bottom: 0;
+
+  .card-title {
+    color: var(--bs-primary) !important;
+    padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+    padding-bottom: 0 !important;
+    margin: 0;
+    height: 80px;
+  }
+
+  img {
+    margin-bottom: 0 !important;
+    border-bottom-right-radius: 10px !important;
+    border-bottom-left-radius: 10px !important;
+    width: 100%;
+  }
+
+  a.card-link {
+    @extend .text-uppercase;
+    background-color: var(--bs-black);
+    background: linear-gradient(0deg, black, transparent);
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 10px;
+    border-bottom-left-radius: 10px;
+    color: var(--bs-white);
+    padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+    font-weight: 600;
+    width: 100%;
+    position: absolute;
+    bottom: 0;
+    text-align: center;
+
+    &:hover {
+      background-color: var(--bs-black);
+      color: var(--bs-white);
+    }
+  }
+}
+
+//
+// 5. Fixture & Results
+//
+.card.header {
+  background-color: var(--bs-primary);
+  border: none;
+  color: var(--bs-white);
+  margin-bottom: 0;
+
+  &:hover {
+    box-shadow: none;
+  }
+}
+
+.card.score {
+  background-color: var(--bs-gray-300);
+  border: none;
+  color: var(--bs-black);
+  margin-bottom: 0;
+
+  &:hover {
+    box-shadow: none;
+  }
+}
+
+.card.stats {
+  background-color: var(--bs-gray-300);
+  border: none;
+  margin-bottom: 0;
+
+  // font-weight: bold;
+
+  &:hover {
+    box-shadow: none;
+  }
+
+  .fi.fis {
+    border-radius: 50%;
+    font-size: 1.5rem;
+    position: relative;
+    top: 2px;
+    left: 5px;
+  }
+
+  ul.list-group {
+    padding: 0;
+  }
+}
