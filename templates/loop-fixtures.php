@@ -314,21 +314,26 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
             <div class="col-12">
                 <?php
                 $league_table_id = 0;
+                $selected_table_id = function_exists('carbon_get_theme_option') ? (int) carbon_get_theme_option('zifa_home_league_table') : 0;
 
-                $league_q = new WP_Query([
-                    'post_type'      => 'league-standings',
-                    'post_status'    => 'publish',
-                    'posts_per_page' => 1,
-                    'orderby'        => 'date',
-                    'order'          => 'DESC',
-                    'no_found_rows'  => true,
-                ]);
+                if ($selected_table_id > 0 && get_post_status($selected_table_id) === 'publish') {
+                    $league_table_id = $selected_table_id;
+                } else {
+                    $league_q = new WP_Query([
+                        'post_type'      => 'league-standings',
+                        'post_status'    => 'publish',
+                        'posts_per_page' => 1,
+                        'orderby'        => 'date',
+                        'order'          => 'DESC',
+                        'no_found_rows'  => true,
+                    ]);
 
-                if ($league_q->have_posts()) {
-                    $league_q->the_post();
-                    $league_table_id = get_the_ID();
+                    if ($league_q->have_posts()) {
+                        $league_q->the_post();
+                        $league_table_id = get_the_ID();
+                    }
+                    wp_reset_postdata();
                 }
-                wp_reset_postdata();
 
                 $full_table_url = home_url('/primary-league-standings/');
 

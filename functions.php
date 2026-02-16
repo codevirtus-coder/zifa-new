@@ -515,6 +515,33 @@ function zifa_get_match_type_options()
     return $options;
 }
 
+// Helper: get league standings posts for select options
+function zifa_get_league_standings_options()
+{
+    $posts = get_posts([
+        'post_type'      => 'league-standings',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'orderby'        => 'date',
+        'order'          => 'DESC',
+    ]);
+
+    $options = [];
+    foreach ($posts as $p) {
+        $title = get_post_meta($p->ID, 'zifa_league_title', true);
+        if ($title === '') $title = get_post_meta($p->ID, '_zifa_league_title', true);
+        $group = get_post_meta($p->ID, 'zifa_league_group', true);
+        if ($group === '') $group = get_post_meta($p->ID, '_zifa_league_group', true);
+
+        $label = $title ? $title : $p->post_title;
+        if ($group !== '') $label .= ' - Group ' . $group;
+
+        $options[$p->ID] = $label;
+    }
+
+    return $options;
+}
+
 
 
 
@@ -600,6 +627,15 @@ function zifa_website_custom_theme_options()
                 ->set_attribute('placeholder', 'Insert scripts here e.g Google Analytics Code...'),
             // Field::make( 'footer_scripts', 'zifa_website_footer_script', __( 'Footer Scripts' ) )
             //     ->set_attribute( 'placeholder', 'Insert scripts here e.g Google Analytics code... ' ),
+        ))
+
+        ->add_tab(__('Home Page'), array(
+            Field::make('select', 'zifa_home_league_table', __('Homepage League Table'))
+                ->set_options(function () {
+                    $opts = zifa_get_league_standings_options();
+                    return ['' => 'Latest (Default)'] + $opts;
+                })
+                ->set_width(100)
         ));
 
 
@@ -1142,9 +1178,9 @@ function zifa_website_custom_theme_options()
                 ->set_collapsed(true)
                 ->add_fields(array(
 
-                    Field::make('text', 'club', 'Club Name')
+                    Field::make('text', 'club', 'Club Name/Team Name')
                         ->set_width(30)
-                        ->set_attribute('placeholder', 'e.g., Eagles'),
+                        ->set_attribute('placeholder', 'e.g., Dynamos'),
 
                     Field::make('text', 'played', 'P')
                         ->set_attribute('type', 'number')
@@ -1347,47 +1383,47 @@ function hc_filter_by_date()
         ?>
             <?php if ($is_tile) : ?>
                 <div class="<?php echo esc_attr($col_class); ?>">
-            <?php endif; ?>
-            <a class="hc-mini-row<?php echo $is_tile ? ' hc-mini-row--tile' : ''; ?>" href="<?php echo esc_url($permalink); ?>">
-                <div class="hc-mini-row__side">
-                    <?php if ($home_code) : ?>
-                        <span class="fi fi-<?php echo esc_attr($home_code); ?> fis"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            title="<?php echo esc_attr($home_name); ?>"></span>
-                    <?php endif; ?>
-                </div>
+                <?php endif; ?>
+                <a class="hc-mini-row<?php echo $is_tile ? ' hc-mini-row--tile' : ''; ?>" href="<?php echo esc_url($permalink); ?>">
+                    <div class="hc-mini-row__side">
+                        <?php if ($home_code) : ?>
+                            <span class="fi fi-<?php echo esc_attr($home_code); ?> fis"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="<?php echo esc_attr($home_name); ?>"></span>
+                        <?php endif; ?>
+                    </div>
 
-                <div class="hc-mini-row__mid">
-                    <?php if ($match_type) : ?>
-                        <div class="hc-mini-row__type"><?php echo esc_html($match_type); ?></div>
-                    <?php endif; ?>
-                    <div class="hc-mini-row__date"><?php echo esc_html($date_human); ?></div>
-                    <div class="hc-mini-row__meta"><?php echo esc_html($kickoff); ?></div>
-                    <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($home_name . ' v ' . $away_name)); ?></div>
-                    <?php if ($stadium || $group_number) : ?>
-                        <div class="hc-mini-row__extras">
-                            <?php if ($stadium) : ?>
-                                <span class="hc-mini-row__chip"><?php echo esc_html($stadium); ?></span>
-                            <?php endif; ?>
-                            <?php if ($group_number) : ?>
-                                <?php $group_label = preg_match('/^group\s+/i', $group_number) ? $group_number : ('Group ' . $group_number); ?>
-                                <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
+                    <div class="hc-mini-row__mid">
+                        <?php if ($match_type) : ?>
+                            <div class="hc-mini-row__type"><?php echo esc_html($match_type); ?></div>
+                        <?php endif; ?>
+                        <div class="hc-mini-row__date"><?php echo esc_html($date_human); ?></div>
+                        <div class="hc-mini-row__meta"><?php echo esc_html($kickoff); ?></div>
+                        <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($home_name . ' v ' . $away_name)); ?></div>
+                        <?php if ($stadium || $group_number) : ?>
+                            <div class="hc-mini-row__extras">
+                                <?php if ($stadium) : ?>
+                                    <span class="hc-mini-row__chip"><?php echo esc_html($stadium); ?></span>
+                                <?php endif; ?>
+                                <?php if ($group_number) : ?>
+                                    <?php $group_label = preg_match('/^group\s+/i', $group_number) ? $group_number : ('Group ' . $group_number); ?>
+                                    <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
 
-                <div class="hc-mini-row__side">
-                    <?php if ($away_code) : ?>
-                        <span class="fi fi-<?php echo esc_attr($away_code); ?> fis"
-                            data-bs-toggle="tooltip"
-                            data-bs-placement="top"
-                            title="<?php echo esc_attr($away_name); ?>"></span>
-                    <?php endif; ?>
-                </div>
-            </a>
-            <?php if ($is_tile) : ?>
+                    <div class="hc-mini-row__side">
+                        <?php if ($away_code) : ?>
+                            <span class="fi fi-<?php echo esc_attr($away_code); ?> fis"
+                                data-bs-toggle="tooltip"
+                                data-bs-placement="top"
+                                title="<?php echo esc_attr($away_name); ?>"></span>
+                        <?php endif; ?>
+                    </div>
+                </a>
+                <?php if ($is_tile) : ?>
                 </div>
             <?php endif; ?>
         <?php
@@ -1485,29 +1521,29 @@ function hc_filter_by_date()
         ?>
             <?php if ($is_tile) : ?>
                 <div class="<?php echo esc_attr($col_class); ?>">
-            <?php endif; ?>
-            <a class="hc-mini-row<?php echo $is_tile ? ' hc-mini-row--tile' : ''; ?>" href="<?php echo esc_url($permalink); ?>">
-                <div class="hc-mini-row__mid" style="grid-column:1 / -1;">
-                    <?php if ($match_type) : ?>
-                        <div class="hc-mini-row__type"><?php echo esc_html($match_type); ?></div>
-                    <?php endif; ?>
-                    <div class="hc-mini-row__date"><?php echo esc_html($date_human); ?></div>
-                    <div class="hc-mini-row__meta"><?php echo esc_html($score_text); ?></div>
-                    <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($home_name . ' v ' . $away_name)); ?></div>
-                    <?php if ($stadium || $group_number) : ?>
-                        <div class="hc-mini-row__extras">
-                            <?php if ($stadium) : ?>
-                                <span class="hc-mini-row__chip"><?php echo esc_html($stadium); ?></span>
-                            <?php endif; ?>
-                            <?php if ($group_number) : ?>
-                                <?php $group_label = preg_match('/^group\s+/i', $group_number) ? $group_number : ('Group ' . $group_number); ?>
-                                <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
-                            <?php endif; ?>
-                        </div>
-                    <?php endif; ?>
-                </div>
-            </a>
-            <?php if ($is_tile) : ?>
+                <?php endif; ?>
+                <a class="hc-mini-row<?php echo $is_tile ? ' hc-mini-row--tile' : ''; ?>" href="<?php echo esc_url($permalink); ?>">
+                    <div class="hc-mini-row__mid" style="grid-column:1 / -1;">
+                        <?php if ($match_type) : ?>
+                            <div class="hc-mini-row__type"><?php echo esc_html($match_type); ?></div>
+                        <?php endif; ?>
+                        <div class="hc-mini-row__date"><?php echo esc_html($date_human); ?></div>
+                        <div class="hc-mini-row__meta"><?php echo esc_html($score_text); ?></div>
+                        <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($home_name . ' v ' . $away_name)); ?></div>
+                        <?php if ($stadium || $group_number) : ?>
+                            <div class="hc-mini-row__extras">
+                                <?php if ($stadium) : ?>
+                                    <span class="hc-mini-row__chip"><?php echo esc_html($stadium); ?></span>
+                                <?php endif; ?>
+                                <?php if ($group_number) : ?>
+                                    <?php $group_label = preg_match('/^group\s+/i', $group_number) ? $group_number : ('Group ' . $group_number); ?>
+                                    <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
+                                <?php endif; ?>
+                            </div>
+                        <?php endif; ?>
+                    </div>
+                </a>
+                <?php if ($is_tile) : ?>
                 </div>
             <?php endif; ?>
     <?php

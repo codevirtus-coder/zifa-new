@@ -82,6 +82,11 @@
   border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
+/* View full table button: remove gray background */
+.fixtures-page .hc-standings-footer {
+  background: transparent;
+}
+
 /* Calendar loading (dark text/spinner) */
 .fixtures-page .hc-cal-wrap.is-loading .hc-loading,
 .fixtures-page .hc-cal-wrap.is-loading .hc-loading:before,
@@ -478,7 +483,7 @@
   background: #efefef;
   color: #111;
   font-weight: 700;
-  padding: 7px 6px;
+  padding: 10px 10px;
   border-bottom: 1px solid #cfcfcf;
   text-align: center;
   white-space: nowrap;
@@ -486,7 +491,7 @@
 
 /* Cells */
 .hc-standings-table tbody td {
-  padding: 7px 6px;
+  padding: 10px 10px;
   border-bottom: 1px solid #e5e5e5;
   text-align: center;
   vertical-align: middle;

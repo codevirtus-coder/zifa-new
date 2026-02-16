@@ -346,14 +346,14 @@ function zifa_render_next_match_panel($next_match)
     <?php
 }
 
-function zifa_render_league_table_for_type($match_type)
+function zifa_render_league_table_for_type($match_type, $show_all_groups = false, $show_button = true)
 {
     $league_table_id = 0;
 
     $league_q = new WP_Query([
         'post_type'      => 'league-standings',
         'post_status'    => 'publish',
-        'posts_per_page' => 1,
+        'posts_per_page' => -1,
         'orderby'        => 'date',
         'order'          => 'DESC',
         'no_found_rows'  => true,
@@ -372,110 +372,143 @@ function zifa_render_league_table_for_type($match_type)
         ],
     ]);
 
-    if ($league_q->have_posts()) {
-        $league_q->the_post();
-        $league_table_id = get_the_ID();
-    }
-    wp_reset_postdata();
-
-    if (! $league_table_id || !function_exists('carbon_get_post_meta')) {
+    if (empty($league_q->posts)) {
         echo '<div class="hc-mini-empty">No league table for this match type.</div>';
+        wp_reset_postdata();
         return;
     }
 
-    $lt_title = (string) carbon_get_post_meta($league_table_id, 'zifa_league_title');
-    $lt_group = (string) carbon_get_post_meta($league_table_id, 'zifa_league_group');
-    $lt_rows  = carbon_get_post_meta($league_table_id, 'zifa_league_table');
-    $lt_heading = $lt_title ?: 'League Standings';
-    if ($lt_group !== '') $lt_heading .= ' - Group ' . $lt_group;
+    // Sort by group A, B, C... then newest
+    usort($league_q->posts, function ($a, $b) {
+        $ga = (string) get_post_meta($a->ID, 'zifa_league_group', true);
+        if ($ga === '') $ga = (string) get_post_meta($a->ID, '_zifa_league_group', true);
+        $gb = (string) get_post_meta($b->ID, 'zifa_league_group', true);
+        if ($gb === '') $gb = (string) get_post_meta($b->ID, '_zifa_league_group', true);
 
-    if (!is_array($lt_rows) || empty($lt_rows)) {
-        echo '<div class="hc-mini-empty">No league table yet.</div>';
-        return;
-    }
+        $ga = strtoupper(trim($ga));
+        $gb = strtoupper(trim($gb));
 
-    $preview_limit   = 6;
-    $lt_preview_rows = array_slice($lt_rows, 0, $preview_limit);
-    $has_more_rows   = count($lt_rows) > $preview_limit;
-    $full_table_url  = home_url('/primary-league-standings/');
-    ?>
-    <section class="hc-mini-panel hc-mini-panel--table w-100 hc-card">
-        <div class="hc-mini-panel__head">
-            <h3 class="hc-mini-panel__title">
-                <?php echo esc_html($lt_heading); ?>
-            </h3>
-        </div>
+        if ($ga !== $gb) {
+            if ($ga === '') return 1;
+            if ($gb === '') return -1;
+            return strcmp($ga, $gb);
+        }
 
-        <div class="hc-mini-panel__body">
-            <div class="hc-standings-wrap" style="overflow-x:auto;">
-                <table class="hc-standings-table" style="width:100%; border-collapse:collapse;">
-                    <thead>
-                        <tr>
-                            <th>Pos</th>
-                            <th style="text-align:left;">Club</th>
-                            <th>P</th>
-                            <th>W</th>
-                            <th>D</th>
-                            <th>L</th>
-                            <th>GF</th>
-                            <th>GA</th>
-                            <th>GD</th>
-                            <th>PTS</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <?php foreach ($lt_preview_rows as $i => $r) :
-                            $club = isset($r['club']) ? trim((string)$r['club']) : '';
-                            if ($club === '') continue;
+        return strcmp($b->post_date, $a->post_date);
+    });
 
-                            $p  = (int) ($r['played'] ?? 0);
-                            $w  = (int) ($r['wins'] ?? 0);
-                            $d  = (int) ($r['draws'] ?? 0);
-                            $l  = (int) ($r['losses'] ?? 0);
-                            $gf = (int) ($r['goals_for'] ?? 0);
-                            $ga = (int) ($r['goals_against'] ?? 0);
+    $posts_to_render = $show_all_groups ? $league_q->posts : [$league_q->posts[0]];
+    $full_table_url  = zifa_get_league_standings_page_url();
+    $full_table_url  = add_query_arg('match_type', $match_type, $full_table_url);
 
-                            $gd  = $gf - $ga;
-                            $pts = (int) ($r['points'] ?? 0);
+    foreach ($posts_to_render as $p) {
+        $table_id = $p->ID;
+        if (!function_exists('carbon_get_post_meta')) continue;
 
-                            $notes = isset($r['notes']) ? trim((string)$r['notes']) : '';
-                        ?>
-                            <tr>
-                                <td><?php echo esc_html($i + 1); ?></td>
-                                <td style="text-align:left;">
-                                    <?php echo esc_html($club); ?>
-                                    <?php if ($notes !== '') : ?>
-                                        <div style="font-size:12px; opacity:.75;">
-                                            <?php echo esc_html($notes); ?>
-                                        </div>
-                                    <?php endif; ?>
-                                </td>
-                                <td><?php echo esc_html($p); ?></td>
-                                <td><?php echo esc_html($w); ?></td>
-                                <td><?php echo esc_html($d); ?></td>
-                                <td><?php echo esc_html($l); ?></td>
-                                <td><?php echo esc_html($gf); ?></td>
-                                <td><?php echo esc_html($ga); ?></td>
-                                <td><?php echo esc_html($gd); ?></td>
-                                <td><strong><?php echo esc_html($pts); ?></strong></td>
-                            </tr>
-                        <?php endforeach; ?>
+        $lt_title = (string) carbon_get_post_meta($table_id, 'zifa_league_title');
+        $lt_group = (string) carbon_get_post_meta($table_id, 'zifa_league_group');
+        $lt_rows  = carbon_get_post_meta($table_id, 'zifa_league_table');
+        $lt_heading = $lt_title ?: 'League Standings';
+        if ($lt_group !== '') $lt_heading .= ' - Group ' . $lt_group;
 
-                    </tbody>
-                </table>
+        if (!is_array($lt_rows) || empty($lt_rows)) {
+            continue;
+        }
+
+        $preview_limit   = $show_all_groups ? count($lt_rows) : 6;
+        $lt_preview_rows = array_slice($lt_rows, 0, $preview_limit);
+        ?>
+        <section class="hc-mini-panel hc-mini-panel--table w-100 hc-card mb-3">
+            <div class="hc-mini-panel__head">
+                <h3 class="hc-mini-panel__title">
+                    <?php echo esc_html($lt_heading); ?>
+                </h3>
             </div>
 
-            <?php if ($has_more_rows) : ?>
-                <div class="hc-standings-footer">
-                    <a class="btn btn-primary" href="<?php echo esc_url($full_table_url); ?>">
-                        View full table
-                    </a>
-                </div>
-            <?php endif; ?>
+            <div class="hc-mini-panel__body">
+                <div class="hc-standings-wrap" style="overflow-x:auto;">
+                    <table class="hc-standings-table" style="width:100%; border-collapse:collapse;">
+                        <thead>
+                            <tr>
+                                <th>Pos</th>
+                                <th style="text-align:left;">Club</th>
+                                <th>P</th>
+                                <th>W</th>
+                                <th>D</th>
+                                <th>L</th>
+                                <th>GF</th>
+                                <th>GA</th>
+                                <th>GD</th>
+                                <th>PTS</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php foreach ($lt_preview_rows as $i => $r) :
+                                $club = isset($r['club']) ? trim((string)$r['club']) : '';
+                                if ($club === '') continue;
 
+                                $p  = (int) ($r['played'] ?? 0);
+                                $w  = (int) ($r['wins'] ?? 0);
+                                $d  = (int) ($r['draws'] ?? 0);
+                                $l  = (int) ($r['losses'] ?? 0);
+                                $gf = (int) ($r['goals_for'] ?? 0);
+                                $ga = (int) ($r['goals_against'] ?? 0);
+
+                                $gd  = $gf - $ga;
+                                $pts = (int) ($r['points'] ?? 0);
+
+                                $notes = isset($r['notes']) ? trim((string)$r['notes']) : '';
+                            ?>
+                                <tr>
+                                    <td><?php echo esc_html($i + 1); ?></td>
+                                    <td style="text-align:left;">
+                                        <?php echo esc_html($club); ?>
+                                        <?php if ($notes !== '') : ?>
+                                            <div style="font-size:12px; opacity:.75;">
+                                                <?php echo esc_html($notes); ?>
+                                            </div>
+                                        <?php endif; ?>
+                                    </td>
+                                    <td><?php echo esc_html($p); ?></td>
+                                    <td><?php echo esc_html($w); ?></td>
+                                    <td><?php echo esc_html($d); ?></td>
+                                    <td><?php echo esc_html($l); ?></td>
+                                    <td><?php echo esc_html($gf); ?></td>
+                                    <td><?php echo esc_html($ga); ?></td>
+                                    <td><?php echo esc_html($gd); ?></td>
+                                    <td><strong><?php echo esc_html($pts); ?></strong></td>
+                                </tr>
+                            <?php endforeach; ?>
+
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+        <?php
+    }
+
+    if ($show_button) : ?>
+        <div class="hc-standings-footer">
+            <a class="btn btn-primary" href="<?php echo esc_url($full_table_url); ?>">
+                View all tables
+            </a>
         </div>
-    </section>
-    <?php
+    <?php endif;
+    wp_reset_postdata();
+}
+
+function zifa_get_league_standings_page_url()
+{
+    $pages = get_pages([
+        'meta_key'   => '_wp_page_template',
+        'meta_value' => 'templates/template-league-standings-matchtype.php',
+        'number'     => 1,
+    ]);
+    if (!empty($pages)) {
+        return get_permalink($pages[0]->ID);
+    }
+    return home_url('/league-standings/');
 }
 
 function zifa_render_calendar_for_type($match_type, $cal_month, $cal_year)
@@ -540,7 +573,7 @@ function zifa_render_calendar_for_type($match_type, $cal_month, $cal_year)
                         <h3 class="hc-type-block__title mb-0">
                             <?php echo esc_html($selected_label !== '' ? $selected_label : 'Match Type'); ?>
                         </h3>
-                        <a class="hc-mini-link" href="<?php echo esc_url(get_permalink()); ?>">Back to all</a>
+                        <a class="btn btn-primary" href="<?php echo esc_url(get_permalink()); ?>">Back to all</a>
                     </div>
 
                     <div class="hc-type-block__body">
@@ -583,7 +616,7 @@ function zifa_render_calendar_for_type($match_type, $cal_month, $cal_year)
 
                                     <div class="col-12">
                                         <?php if ($selected_label !== '') : ?>
-                                            <?php zifa_render_league_table_for_type($selected_label); ?>
+                                            <?php zifa_render_league_table_for_type($selected_label, true, false); ?>
                                         <?php endif; ?>
                                     </div>
                                 </div>
@@ -628,7 +661,7 @@ function zifa_render_calendar_for_type($match_type, $cal_month, $cal_year)
                     data-tile-cols="2">
                     <div class="hc-type-block__head d-flex justify-content-between align-items-center">
                         <h3 class="hc-type-block__title mb-0"><?php echo esc_html($type_label); ?></h3>
-                        <a class="hc-mini-link" href="<?php echo esc_url($view_all_url); ?>">View all</a>
+                        <a class="btn btn-primary" href="<?php echo esc_url($view_all_url); ?>">View all</a>
                     </div>
 
                     <div class="hc-type-block__body">
@@ -660,7 +693,7 @@ function zifa_render_calendar_for_type($match_type, $cal_month, $cal_year)
                                                 </div>
                                             <?php endif; ?>
                                             <div class="col-12">
-                                                <?php zifa_render_league_table_for_type($type_label); ?>
+                                                <?php zifa_render_league_table_for_type($type_label, false, true); ?>
                                             </div>
                                         </div>
                                     </div>
