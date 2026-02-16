@@ -490,6 +490,31 @@ function get_countries_from_json()
     return $options;
 }
 
+// Helper: get match type options from fixtures/results CPT
+function zifa_get_match_type_options()
+{
+    $ids = get_posts([
+        'post_type'      => 'fixtures-results',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'fields'         => 'ids',
+    ]);
+
+    $options = [];
+    foreach ($ids as $pid) {
+        $type = function_exists('carbon_get_post_meta') ? (string) carbon_get_post_meta($pid, 'fixture_match_type') : '';
+        if ($type === '') {
+            $type = (string) get_post_meta($pid, '_fixture_match_type', true);
+        }
+        $type = trim($type);
+        if ($type === '') continue;
+        $options[$type] = $type;
+    }
+
+    ksort($options);
+    return $options;
+}
+
 
 
 
@@ -862,6 +887,7 @@ function zifa_website_custom_theme_options()
         ->where('post_type', '=', 'fixtures-results')
         ->add_fields(array(
 
+
             // ==============================
             // SECTION: Match Details
             // ==============================
@@ -874,18 +900,51 @@ function zifa_website_custom_theme_options()
                 ->set_width(30)
                 ->set_attribute('placeholder', 'e.g., 15:00'),
 
+            Field::make('text', 'fixture_match_number', 'Match Number')
+                ->set_width(20)
+                ->set_attribute('placeholder', 'e.g., M1'),
+
+            Field::make('select', 'fixture_gender', 'Gender')
+                ->set_options(array(
+                    'men'   => 'Men',
+                    'women' => 'Women'
+                ))
+                ->set_width(20),
+
+            Field::make('select', 'fixture_age_group', 'Age Group')
+                ->set_options(array(
+                    'senior' => 'Senior',
+                    'u13'    => 'U13',
+                    'u15'    => 'U15',
+                    'u17'    => 'U17',
+                    'u20'    => 'U20',
+                    'u23'    => 'U23',
+                ))
+                ->set_width(20),
+
             Field::make('select', 'fixture_match_type', 'Match Type')
                 ->set_options(array(
                     'Africa Cup of Nations (AFCON)' => 'Africa Cup of Nations (AFCON)',
                     'CAF World Cup Qualifiers' => 'CAF World Cup Qualifiers',
                     'COSAFA Cup' => 'COSAFA Cup',
+                    'COSAFA Women\'s Championship' => 'COSAFA Women\'s Championship',
                     'FIFA World Cup' => 'FIFA World Cup',
                     'Friendly' => 'Friendly',
+                    'U-17 Women\'s World Cup Qualifiers' => 'U-17 Women\'s World Cup Qualifiers',
                 ))
                 ->set_width(30),
 
             Field::make('text', 'fixture_stadium', 'Stadium')
                 ->set_width(30),
+
+            Field::make('select', 'fixture_group_number', 'Group Number')
+                ->set_options(array(
+                    'A' => 'Group A',
+                    'B' => 'Group B',
+                    'C' => 'Group C',
+                    'D' => 'Group D',
+                ))
+                ->set_width(20),
 
             Field::make('select', 'fixture_country_home', 'Home Team')
                 ->set_options(get_countries_from_json())
@@ -1053,13 +1112,26 @@ function zifa_website_custom_theme_options()
     // ==============================
     // League Standings - Fields (POST META)
     // ==============================
+
     Container::make('post_meta', 'League Standings')
         ->where('post_type', '=', 'league-standings')
         ->add_fields(array(
 
-            Field::make('text', 'zifa_league_title', 'Table Title')
-                ->set_default_value('Primary League Standings')
-                ->set_width(50),
+            Field::make('select', 'zifa_league_title', 'Match Type')
+                ->set_options(function () {
+                    $opts = zifa_get_match_type_options();
+                    return ['' => 'Select match type'] + $opts;
+                })
+                ->set_width(34),
+
+            Field::make('select', 'zifa_league_group', 'Group')
+                ->set_options(array(
+                    'A' => 'Group A',
+                    'B' => 'Group B',
+                    'C' => 'Group C',
+                    'D' => 'Group D',
+                ))
+                ->set_width(16),
 
             Field::make('text', 'zifa_league_season', 'Season / Round Label')
                 ->set_default_value('2025/26')
@@ -1068,7 +1140,6 @@ function zifa_website_custom_theme_options()
             Field::make('complex', 'zifa_league_table', 'Teams Table')
                 ->set_layout('tabbed-horizontal')
                 ->set_collapsed(true)
-                ->set_help_text('Enter P/W/D/L/F/A. GD and Points can be calculated on frontend.')
                 ->add_fields(array(
 
                     Field::make('text', 'club', 'Club Name')
@@ -1099,23 +1170,26 @@ function zifa_website_custom_theme_options()
                         ->set_default_value(0)
                         ->set_width(10),
 
-                    Field::make('text', 'goals_for', 'F')
+                    Field::make('text', 'goals_for', 'GF')
                         ->set_attribute('type', 'number')
                         ->set_attribute('min', 0)
                         ->set_default_value(0)
                         ->set_width(10),
 
-                    Field::make('text', 'goals_against', 'A')
+                    Field::make('text', 'goals_against', 'GA')
                         ->set_attribute('type', 'number')
                         ->set_attribute('min', 0)
                         ->set_default_value(0)
                         ->set_width(10),
 
-                    Field::make('text', 'notes', 'Notes (optional)')
-                        ->set_width(20)
-                        ->set_attribute('placeholder', 'e.g., -3 points deduction'),
+                    Field::make('text', 'points', 'PTS')
+                        ->set_attribute('type', 'number')
+                        ->set_attribute('min', 0)
+                        ->set_default_value(0)
+                        ->set_width(10)
                 )),
         ));
+
 
 
     // 
@@ -1182,36 +1256,86 @@ function hc_filter_by_date()
         wp_send_json_error(['message' => 'Invalid date'], 400);
     }
 
+    $date_start = $date . ' 00:00:00';
+    $date_end   = $date . ' 23:59:59';
+
+    $match_type = isset($_POST['match_type']) ? sanitize_text_field($_POST['match_type']) : '';
+    $layout = isset($_POST['layout']) ? sanitize_text_field($_POST['layout']) : 'list';
+    $tile_cols = isset($_POST['tile_cols']) ? (int) $_POST['tile_cols'] : 2;
+    $is_tile = ($layout === 'tile');
+    $col_class = ($tile_cols === 1) ? 'col-12' : 'col-12 col-md-6';
+
     $countries = function_exists('get_countries_from_json') ? get_countries_from_json() : [];
 
     // FIXTURES
-    $fixture_ids = get_posts([
-        'post_type'      => 'fixtures-results',
-        'posts_per_page' => 50,
-        'post_status'    => 'publish',
-        'meta_query'     => [
-            'relation' => 'AND',
+    $fixture_meta_query = [
+        'relation' => 'AND',
+        [
+            'relation' => 'OR',
             [
                 'key'     => 'fixture_match_status',
                 'value'   => 'fixture',
                 'compare' => '=',
             ],
             [
-                'key'     => 'fixture_date',
-                'value'   => $date,
+                'key'     => '_fixture_match_status',
+                'value'   => 'fixture',
                 'compare' => '=',
-                'type'    => 'DATE',
             ],
         ],
+        [
+            'relation' => 'OR',
+            [
+                'key'     => 'fixture_date',
+                'value'   => [$date_start, $date_end],
+                'compare' => 'BETWEEN',
+                'type'    => 'DATETIME',
+            ],
+            [
+                'key'     => '_fixture_date',
+                'value'   => [$date_start, $date_end],
+                'compare' => 'BETWEEN',
+                'type'    => 'DATETIME',
+            ],
+        ],
+    ];
+
+    if ($match_type !== '') {
+        $fixture_meta_query[] = [
+            'relation' => 'OR',
+            [
+                'key'     => 'fixture_match_type',
+                'value'   => $match_type,
+                'compare' => '=',
+            ],
+            [
+                'key'     => '_fixture_match_type',
+                'value'   => $match_type,
+                'compare' => '=',
+            ],
+        ];
+    }
+
+    $fixture_ids = get_posts([
+        'post_type'      => 'fixtures-results',
+        'posts_per_page' => 50,
+        'post_status'    => 'publish',
+        'meta_query'     => $fixture_meta_query,
         'fields' => 'ids',
     ]);
 
     ob_start();
+    if ($is_tile) {
+        echo '<div class="row g-3">';
+    }
     if (!empty($fixture_ids)) {
         foreach ($fixture_ids as $post_id) {
             $home_code = carbon_get_post_meta($post_id, 'fixture_country_home') ?: '';
             $away_code = carbon_get_post_meta($post_id, 'fixture_country_away') ?: '';
             $kickoff   = carbon_get_post_meta($post_id, 'fixture_time') ?: 'TBD';
+            $match_type = trim((string) carbon_get_post_meta($post_id, 'fixture_match_type'));
+            $stadium = trim((string) carbon_get_post_meta($post_id, 'fixture_stadium'));
+            $group_number = trim((string) carbon_get_post_meta($post_id, 'fixture_group_number'));
 
             $home_name = $home_code ? ($countries[$home_code] ?? 'Home Team') : 'Home';
             $away_name = $away_code ? ($countries[$away_code] ?? 'Away Team') : 'Away';
@@ -1221,7 +1345,10 @@ function hc_filter_by_date()
 
             $permalink = get_permalink($post_id);
         ?>
-            <a class="hc-mini-row" href="<?php echo esc_url($permalink); ?>">
+            <?php if ($is_tile) : ?>
+                <div class="<?php echo esc_attr($col_class); ?>">
+            <?php endif; ?>
+            <a class="hc-mini-row<?php echo $is_tile ? ' hc-mini-row--tile' : ''; ?>" href="<?php echo esc_url($permalink); ?>">
                 <div class="hc-mini-row__side">
                     <?php if ($home_code) : ?>
                         <span class="fi fi-<?php echo esc_attr($home_code); ?> fis"
@@ -1232,9 +1359,23 @@ function hc_filter_by_date()
                 </div>
 
                 <div class="hc-mini-row__mid">
+                    <?php if ($match_type) : ?>
+                        <div class="hc-mini-row__type"><?php echo esc_html($match_type); ?></div>
+                    <?php endif; ?>
                     <div class="hc-mini-row__date"><?php echo esc_html($date_human); ?></div>
                     <div class="hc-mini-row__meta"><?php echo esc_html($kickoff); ?></div>
                     <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($home_name . ' v ' . $away_name)); ?></div>
+                    <?php if ($stadium || $group_number) : ?>
+                        <div class="hc-mini-row__extras">
+                            <?php if ($stadium) : ?>
+                                <span class="hc-mini-row__chip"><?php echo esc_html($stadium); ?></span>
+                            <?php endif; ?>
+                            <?php if ($group_number) : ?>
+                                <?php $group_label = preg_match('/^group\s+/i', $group_number) ? $group_number : ('Group ' . $group_number); ?>
+                                <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
 
                 <div class="hc-mini-row__side">
@@ -1246,48 +1387,87 @@ function hc_filter_by_date()
                     <?php endif; ?>
                 </div>
             </a>
+            <?php if ($is_tile) : ?>
+                </div>
+            <?php endif; ?>
         <?php
         }
     } else {
         echo '<div class="hc-mini-empty">No fixtures on this date.</div>';
     }
+    if ($is_tile) {
+        echo '</div>';
+    }
     $fixtures_html = ob_get_clean();
 
     // RESULTS
+    $result_meta_query = [
+        'relation' => 'AND',
+        [
+            'relation' => 'OR',
+            [
+                'key'     => '_fixture_match_status',
+                'value'   => 'result',
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'fixture_match_status',
+                'value'   => 'result',
+                'compare' => '=',
+            ],
+        ],
+        [
+            'relation' => 'OR',
+            [
+                'key'     => 'fixture_date',
+                'value'   => [$date_start, $date_end],
+                'compare' => 'BETWEEN',
+                'type'    => 'DATETIME',
+            ],
+            [
+                'key'     => '_fixture_date',
+                'value'   => [$date_start, $date_end],
+                'compare' => 'BETWEEN',
+                'type'    => 'DATETIME',
+            ],
+        ],
+    ];
+
+    if ($match_type !== '') {
+        $result_meta_query[] = [
+            'relation' => 'OR',
+            [
+                'key'     => 'fixture_match_type',
+                'value'   => $match_type,
+                'compare' => '=',
+            ],
+            [
+                'key'     => '_fixture_match_type',
+                'value'   => $match_type,
+                'compare' => '=',
+            ],
+        ];
+    }
+
     $result_ids = get_posts([
         'post_type'      => 'fixtures-results',
         'posts_per_page' => 50,
         'post_status'    => 'publish',
-        'meta_query'     => [
-            'relation' => 'AND',
-            [
-                'relation' => 'OR',
-                [
-                    'key'     => '_fixture_match_status',
-                    'value'   => 'result',
-                    'compare' => '=',
-                ],
-                [
-                    'key'     => 'fixture_match_status',
-                    'value'   => 'result',
-                    'compare' => '=',
-                ],
-            ],
-            [
-                'key'     => 'fixture_date',
-                'value'   => $date,
-                'compare' => '=',
-                'type'    => 'DATE',
-            ],
-        ],
+        'meta_query'     => $result_meta_query,
         'fields' => 'ids',
     ]);
 
     ob_start();
+    if ($is_tile) {
+        echo '<div class="row g-3">';
+    }
     if (!empty($result_ids)) {
         foreach ($result_ids as $post_id) {
             $home = carbon_get_post_meta($post_id, 'fixture_country_home') ?: '';
             $away = carbon_get_post_meta($post_id, 'fixture_country_away') ?: '';
+            $match_type = trim((string) carbon_get_post_meta($post_id, 'fixture_match_type'));
+            $stadium = trim((string) carbon_get_post_meta($post_id, 'fixture_stadium'));
+            $group_number = trim((string) carbon_get_post_meta($post_id, 'fixture_group_number'));
 
             $home_name = $home ? ($countries[$home] ?? 'Home Team') : 'Home';
             $away_name = $away ? ($countries[$away] ?? 'Away Team') : 'Away';
@@ -1303,17 +1483,40 @@ function hc_filter_by_date()
 
             $permalink = get_permalink($post_id);
         ?>
-            <a class="hc-mini-row" href="<?php echo esc_url($permalink); ?>">
+            <?php if ($is_tile) : ?>
+                <div class="<?php echo esc_attr($col_class); ?>">
+            <?php endif; ?>
+            <a class="hc-mini-row<?php echo $is_tile ? ' hc-mini-row--tile' : ''; ?>" href="<?php echo esc_url($permalink); ?>">
                 <div class="hc-mini-row__mid" style="grid-column:1 / -1;">
+                    <?php if ($match_type) : ?>
+                        <div class="hc-mini-row__type"><?php echo esc_html($match_type); ?></div>
+                    <?php endif; ?>
                     <div class="hc-mini-row__date"><?php echo esc_html($date_human); ?></div>
                     <div class="hc-mini-row__meta"><?php echo esc_html($score_text); ?></div>
                     <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($home_name . ' v ' . $away_name)); ?></div>
+                    <?php if ($stadium || $group_number) : ?>
+                        <div class="hc-mini-row__extras">
+                            <?php if ($stadium) : ?>
+                                <span class="hc-mini-row__chip"><?php echo esc_html($stadium); ?></span>
+                            <?php endif; ?>
+                            <?php if ($group_number) : ?>
+                                <?php $group_label = preg_match('/^group\s+/i', $group_number) ? $group_number : ('Group ' . $group_number); ?>
+                                <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
+                            <?php endif; ?>
+                        </div>
+                    <?php endif; ?>
                 </div>
             </a>
+            <?php if ($is_tile) : ?>
+                </div>
+            <?php endif; ?>
     <?php
         }
     } else {
         echo '<div class="hc-mini-empty">No results on this date.</div>';
+    }
+    if ($is_tile) {
+        echo '</div>';
     }
     $results_html = ob_get_clean();
 
@@ -1554,18 +1757,14 @@ function hc_calendar_ajax()
 
     $month = isset($_POST['month']) ? (int) $_POST['month'] : (int) wp_date('n');
     $year  = isset($_POST['year'])  ? (int) $_POST['year']  : (int) wp_date('Y');
+    $match_type = isset($_POST['match_type']) ? sanitize_text_field($_POST['match_type']) : '';
 
-    echo hc_render_mini_calendar($month, $year);
+    echo hc_render_mini_calendar($month, $year, $match_type);
     wp_die();
 }
 
-/**
- * Render calendar HTML (reusable in template + ajax)
- * RULE:
- * - Past date: dot ONLY if it's a RESULT
- * - Today/future: dot for FIXTURE or RESULT
- */
-function hc_render_mini_calendar($month, $year)
+
+function hc_render_mini_calendar($month, $year, $match_type = '')
 {
     if ($month < 1) $month = 1;
     if ($month > 12) $month = 12;
@@ -1587,7 +1786,7 @@ function hc_render_mini_calendar($month, $year)
 
     $first_day_ts   = strtotime("$year-$month-01");
     $days_in_month  = (int) date('t', $first_day_ts);
-    $start_weekday  = (int) date('w', $first_day_ts); // 0=Sun..6=Sat
+    $start_weekday  = (int) date('w', $first_day_ts);
     $month_label    = date('F Y', $first_day_ts);
 
     $today_iso = wp_date('Y-m-d');
@@ -1597,12 +1796,10 @@ function hc_render_mini_calendar($month, $year)
     $month_end   = sprintf('%04d-%02d-%02d', $year, $month, $days_in_month);
 
 
-    $month_posts = get_posts([
-        'post_type'      => 'fixtures-results',
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-        'meta_query'     => [
-            'relation' => 'AND',
+    $meta_query = [
+        'relation' => 'AND',
+        [
+            'relation' => 'OR',
             [
                 'key'     => 'fixture_date',
                 'value'   => [$month_start, $month_end],
@@ -1610,24 +1807,58 @@ function hc_render_mini_calendar($month, $year)
                 'type'    => 'DATE',
             ],
             [
-                'relation' => 'OR',
-                [
-                    'key'     => 'fixture_match_status',
-                    'value'   => 'fixture',
-                    'compare' => '=',
-                ],
-                [
-                    'key'     => 'fixture_match_status',
-                    'value'   => 'result',
-                    'compare' => '=',
-                ],
-                [
-                    'key'     => '_fixture_match_status',
-                    'value'   => 'result',
-                    'compare' => '=',
-                ],
+                'key'     => '_fixture_date',
+                'value'   => [$month_start, $month_end],
+                'compare' => 'BETWEEN',
+                'type'    => 'DATE',
             ],
         ],
+        [
+            'relation' => 'OR',
+            [
+                'key'     => 'fixture_match_status',
+                'value'   => 'fixture',
+                'compare' => '=',
+            ],
+            [
+                'key'     => 'fixture_match_status',
+                'value'   => 'result',
+                'compare' => '=',
+            ],
+            [
+                'key'     => '_fixture_match_status',
+                'value'   => 'fixture',
+                'compare' => '=',
+            ],
+            [
+                'key'     => '_fixture_match_status',
+                'value'   => 'result',
+                'compare' => '=',
+            ],
+        ],
+    ];
+
+    if ($match_type !== '') {
+        $meta_query[] = [
+            'relation' => 'OR',
+            [
+                'key'     => 'fixture_match_type',
+                'value'   => $match_type,
+                'compare' => '=',
+            ],
+            [
+                'key'     => '_fixture_match_type',
+                'value'   => $match_type,
+                'compare' => '=',
+            ],
+        ];
+    }
+
+    $month_posts = get_posts([
+        'post_type'      => 'fixtures-results',
+        'posts_per_page' => -1,
+        'post_status'    => 'publish',
+        'meta_query'     => $meta_query,
         'fields' => 'ids',
     ]);
 

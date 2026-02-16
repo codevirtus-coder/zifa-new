@@ -170,11 +170,15 @@ if ($league_q->have_posts()) {
 wp_reset_postdata();
 
 $lt_title = 'League Standings';
+$lt_group = '';
 $lt_rows  = [];
 if ($league_table_id && function_exists('carbon_get_post_meta')) {
     $lt_title = (string) carbon_get_post_meta($league_table_id, 'zifa_league_title') ?: $lt_title;
+    $lt_group = (string) carbon_get_post_meta($league_table_id, 'zifa_league_group');
     $lt_rows  = carbon_get_post_meta($league_table_id, 'zifa_league_table');
 }
+$lt_heading = $lt_title;
+if ($lt_group !== '') $lt_heading .= ' - Group ' . $lt_group;
 ?>
 
 <div class="container my-4">
@@ -184,7 +188,7 @@ if ($league_table_id && function_exists('carbon_get_post_meta')) {
         <div class="col-12 col-lg-8">
             <section class="hc-mini-panel hc-mini-panel--table hc-card w-100">
                 <div class="hc-mini-panel__head">
-                    <h3 class="hc-mini-panel__title"><?php echo esc_html($lt_title); ?></h3>
+                    <h3 class="hc-mini-panel__title"><?php echo esc_html($lt_heading); ?></h3>
                 </div>
 
                 <div class="hc-mini-panel__body">
@@ -199,10 +203,10 @@ if ($league_table_id && function_exists('carbon_get_post_meta')) {
                                         <th>W</th>
                                         <th>D</th>
                                         <th>L</th>
-                                        <th>F</th>
-                                        <th>A</th>
+                                        <th>GF</th>
+                                        <th>GA</th>
                                         <th>GD</th>
-                                        <th>Pts</th>
+                                        <th>PTS</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -319,7 +323,7 @@ if ($league_table_id && function_exists('carbon_get_post_meta')) {
             </section>
 
             <!-- CALENDAR -->
-            <section class="hc-mini-panel hc-mini-panel--calendar hc-card w-100 mt-3">
+            <!-- <section class="hc-mini-panel hc-mini-panel--calendar hc-card w-100 mt-3">
                 <div class="hc-mini-panel__head">
                     <h3 class="hc-mini-panel__title">Calendar</h3>
                 </div>
@@ -331,7 +335,7 @@ if ($league_table_id && function_exists('carbon_get_post_meta')) {
                         <?php echo function_exists('hc_render_mini_calendar') ? hc_render_mini_calendar($cal_month, $cal_year) : ''; ?>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
         </div>
 

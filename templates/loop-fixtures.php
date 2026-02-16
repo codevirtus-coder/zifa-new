@@ -41,6 +41,9 @@ foreach ($fixture_ids as $post_id) {
     $home_code = carbon_get_post_meta($post_id, 'fixture_country_home') ?: '';
     $away_code = carbon_get_post_meta($post_id, 'fixture_country_away') ?: '';
     $kickoff   = carbon_get_post_meta($post_id, 'fixture_time') ?: 'TBD';
+    $match_type = trim((string) carbon_get_post_meta($post_id, 'fixture_match_type'));
+    $stadium = trim((string) carbon_get_post_meta($post_id, 'fixture_stadium'));
+    $group_number = trim((string) carbon_get_post_meta($post_id, 'fixture_group_number'));
 
     $home_name = $home_code ? ($countries[$home_code] ?? 'Home Team') : 'Home';
     $away_name = $away_code ? ($countries[$away_code] ?? 'Away Team') : 'Away';
@@ -61,6 +64,9 @@ foreach ($fixture_ids as $post_id) {
         'home_name'  => $home_name,
         'away_name'  => $away_name,
         'kickoff'    => $kickoff,
+        'match_type' => $match_type,
+        'stadium' => $stadium,
+        'group_number' => $group_number,
         'kickoff_ts' => $kickoff_ts,
         'permalink'  => get_permalink($post_id),
     ];
@@ -136,6 +142,9 @@ if (!empty($result_ids)) {
 
         $home_score = carbon_get_post_meta($post_id, 'fixture_country_home_score');
         $away_score = carbon_get_post_meta($post_id, 'fixture_country_away_score');
+        $match_type = trim((string) carbon_get_post_meta($post_id, 'fixture_match_type'));
+        $stadium = trim((string) carbon_get_post_meta($post_id, 'fixture_stadium'));
+        $group_number = trim((string) carbon_get_post_meta($post_id, 'fixture_group_number'));
 
         $show_score = is_numeric($home_score) && is_numeric($away_score);
         $score_text = $show_score ? ($home_score . ' - ' . $away_score) : '–';
@@ -150,6 +159,9 @@ if (!empty($result_ids)) {
             'home_name'  => $home_name,
             'away_name'  => $away_name,
             'middle'     => $score_text,
+            'match_type' => $match_type,
+            'stadium' => $stadium,
+            'group_number' => $group_number,
             'permalink'  => get_permalink($post_id),
         ];
     }
@@ -205,9 +217,23 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
                                     </div>
 
                                     <div class="hc-mini-row__mid">
+                                        <?php if (!empty($m['match_type'])) : ?>
+                                            <div class="hc-mini-row__type"><?php echo esc_html($m['match_type']); ?></div>
+                                        <?php endif; ?>
                                         <div class="hc-mini-row__date"><?php echo esc_html($m['date_human']); ?></div>
                                         <div class="hc-mini-row__meta"><?php echo esc_html($m['kickoff']); ?></div>
                                         <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($m['home_name'] . ' v ' . $m['away_name'])); ?></div>
+                                        <?php if (!empty($m['stadium']) || !empty($m['group_number'])) : ?>
+                                            <div class="hc-mini-row__extras">
+                                                <?php if (!empty($m['stadium'])) : ?>
+                                                    <span class="hc-mini-row__chip"><?php echo esc_html($m['stadium']); ?></span>
+                                                <?php endif; ?>
+                                                <?php if (!empty($m['group_number'])) : ?>
+                                                    <?php $group_label = preg_match('/^group\s+/i', $m['group_number']) ? $m['group_number'] : ('Group ' . $m['group_number']); ?>
+                                                    <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
 
                                     <div class="hc-mini-row__side">
@@ -248,9 +274,23 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
                                     </div>
 
                                     <div class="hc-mini-row__mid">
+                                        <?php if (!empty($m['match_type'])) : ?>
+                                            <div class="hc-mini-row__type"><?php echo esc_html($m['match_type']); ?></div>
+                                        <?php endif; ?>
                                         <div class="hc-mini-row__date"><?php echo esc_html($m['date_human']); ?></div>
                                         <div class="hc-mini-row__meta"><?php echo esc_html($m['middle']); ?></div>
                                         <div class="hc-mini-row__match"><?php echo esc_html(strtoupper($m['home_name'] . ' v ' . $m['away_name'])); ?></div>
+                                        <?php if (!empty($m['stadium']) || !empty($m['group_number'])) : ?>
+                                            <div class="hc-mini-row__extras">
+                                                <?php if (!empty($m['stadium'])) : ?>
+                                                    <span class="hc-mini-row__chip"><?php echo esc_html($m['stadium']); ?></span>
+                                                <?php endif; ?>
+                                                <?php if (!empty($m['group_number'])) : ?>
+                                                    <?php $group_label = preg_match('/^group\s+/i', $m['group_number']) ? $m['group_number'] : ('Group ' . $m['group_number']); ?>
+                                                    <span class="hc-mini-row__chip"><?php echo esc_html($group_label); ?></span>
+                                                <?php endif; ?>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
 
                                     <div class="hc-mini-row__side">
@@ -294,7 +334,10 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
 
                 if ($league_table_id && function_exists('carbon_get_post_meta')) :
                     $lt_title = (string) carbon_get_post_meta($league_table_id, 'zifa_league_title');
+                    $lt_group = (string) carbon_get_post_meta($league_table_id, 'zifa_league_group');
                     $lt_rows  = carbon_get_post_meta($league_table_id, 'zifa_league_table');
+                    $lt_heading = $lt_title ?: 'League Standings';
+                    if ($lt_group !== '') $lt_heading .= ' - Group ' . $lt_group;
 
                     if (is_array($lt_rows) && !empty($lt_rows)) :
                         $preview_limit   = 6;
@@ -304,7 +347,7 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
                         <section class="hc-mini-panel hc-mini-panel--table w-100 hc-card">
                             <div class="hc-mini-panel__head">
                                 <h3 class="hc-mini-panel__title">
-                                    <?php echo esc_html($lt_title ?: 'League Standings'); ?>
+                                    <?php echo esc_html($lt_heading); ?>
                                 </h3>
                             </div>
 
@@ -319,10 +362,10 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
                                                 <th>W</th>
                                                 <th>D</th>
                                                 <th>L</th>
-                                                <th>F</th>
-                                                <th>A</th>
+                                                <th>GF</th>
+                                                <th>GA</th>
                                                 <th>GD</th>
-                                                <th>Pts</th>
+                                                <th>PTS</th>
                                             </tr>
                                         </thead>
                                         <tbody>
@@ -338,7 +381,7 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
                                                 $ga = (int) ($r['goals_against'] ?? 0);
 
                                                 $gd  = $gf - $ga;
-                                                $pts = ($w * 3) + $d;
+                                                $pts = (int) ($r['points'] ?? 0);
 
                                                 $notes = isset($r['notes']) ? trim((string)$r['notes']) : '';
                                             ?>
@@ -362,6 +405,7 @@ $nonce     = wp_create_nonce('hc_calendar_nonce');
                                                     <td><strong><?php echo esc_html($pts); ?></strong></td>
                                                 </tr>
                                             <?php endforeach; ?>
+
                                         </tbody>
                                     </table>
                                 </div>

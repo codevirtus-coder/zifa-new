@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Template Name: Action Zone - Landing Page
  * Description: For creating Team Content Pages
@@ -7,7 +8,7 @@ get_header();
 ?>
 
 
-<?php get_template_part( 'templates/banner' ); ?>
+<?php get_template_part('templates/banner'); ?>
 
 
 <section class="container mt-5 mb-5">
@@ -25,20 +26,20 @@ get_header();
             <h2 class="mb-4">Fixtures</h2>
         </div>
 
-        <?php get_template_part('templates/loop-fixtures');?>
+        <?php get_template_part('templates/loop-fixtures'); ?>
     </div>
 </section>
 
 
-<section class="container mt-5 mb-5">
+<!-- <section class="container mt-5 mb-5">
     <div class="row">
         <div class="col-12">
             <h2 class="mb-4">Results</h2>
         </div>
 
-        <?php get_template_part('templates/loop-results');?>
+        <?php get_template_part('templates/loop-results'); ?>
     </div>
-</section>
+</section> -->
 
 
 <?php get_footer(); ?>

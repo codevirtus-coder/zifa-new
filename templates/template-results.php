@@ -1,11 +1,14 @@
 <?php
 
 /**
+ * 
  * Template Name: Action Zone - Results Only
  * Description: For creating Team Content Pages
  **/
+
 get_header();
 ?>
+
 
 <?php get_template_part('templates/banner'); ?>
 
@@ -22,13 +25,7 @@ get_header();
         <div class="col-12">
 
             <?php
-            /**
-             * LOGIC (unchanged):
-             * - Fetch matching post IDs (status = result)
-             * - Compute min_code per post
-             * - Sort by date DESC (newest first). Missing dates last.
-             * - Tie-breaker: min_code ASC
-             */
+
 
             $post_ids = get_posts([
                 'post_type'      => 'fixtures-results',
@@ -75,7 +72,7 @@ get_header();
                     $home_name = $home ? ($countries[$home] ?? 'Home Team') : 'Home';
                     $away_name = $away ? ($countries[$away] ?? 'Away Team') : 'Away';
 
-                    // ✅ SCORE (same keys as your single match template)
+
                     $home_score = carbon_get_post_meta($post_id, 'fixture_country_home_score');
                     $away_score = carbon_get_post_meta($post_id, 'fixture_country_away_score');
 
@@ -91,7 +88,7 @@ get_header();
                         'away_code'  => $away,
                         'home_name'  => $home_name,
                         'away_name'  => $away_name,
-                        'middle'     => $score_text, // results show score
+                        'middle'     => $score_text,
                         'permalink'  => get_permalink($post_id),
                     ];
                 }
@@ -114,7 +111,7 @@ get_header();
             }
             ?>
 
-            <!-- ✅ ONE PANEL HEADER (no repeating RESULT per tile) -->
+
             <section class="hc-mini-panel w-100">
                 <div class="hc-mini-panel__head">
                     <h3 class="hc-mini-panel__title">Results</h3>
@@ -125,8 +122,9 @@ get_header();
 
                         <div class="row g-3">
                             <?php foreach ($results as $m) : ?>
-                                <!-- ✅ md+ = 2 columns -->
-                                <div class="col-12 col-md-6">
+
+                                <div class="<?php echo (count($results) === 1) ? 'col-12' : 'col-12 col-md-6'; ?>">
+
                                     <a class="hc-mini-row hc-mini-row--tile" href="<?php echo esc_url($m['permalink']); ?>">
 
                                         <div class="hc-mini-row__side">

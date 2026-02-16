@@ -5,22 +5,110 @@
   background: #fff;
 }
 
+.hc-mini-panel {
+  width: 100%;
+  border-radius: 8px;
+  overflow: hidden;
+  background: #fff;
+}
+
 .hc-mini-panel__head {
   background: var(--bs-primary);
-  padding: 6px 10px;
+  padding: 10px 14px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .hc-mini-panel__title {
   margin: 0;
   color: #fff;
-  font-size: 14px;
-  font-weight: 900;
+  font-size: 13px;
+  font-weight: 800;
   text-transform: uppercase;
-  letter-spacing: 0.3px;
+  letter-spacing: 0.2px;
 }
 
 .hc-mini-panel__body {
-  padding: 6px;
+  padding: 12px 14px;
+}
+
+/* Match type header (outer wrapper) */
+.hc-type-block__head {
+  background: var(--bs-primary);
+  padding: 10px 14px;
+  border-radius: 8px 8px 0 0;
+}
+
+.hc-type-block__title {
+  margin: 0;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+}
+
+.hc-type-block__body {
+  padding-top: 12px;
+}
+
+/* Fixtures page: flatten only Fixtures/Results panels */
+.fixtures-page .hc-mini-panel--flat {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+}
+
+.fixtures-page .hc-mini-panel--flat .hc-mini-panel__head {
+  background: transparent;
+  padding: 6px 4px 8px;
+  border-bottom: 0;
+}
+
+.fixtures-page .hc-mini-panel--flat .hc-mini-panel__title {
+  color: #0b7a34;
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: 0.2px;
+}
+
+.fixtures-page .hc-mini-panel--flat .hc-mini-panel__body {
+  background: transparent;
+  padding: 0;
+}
+
+/* Subtle card edges for fixtures/results */
+.fixtures-page .hc-mini-panel--flat .hc-mini-row {
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+}
+
+/* Calendar loading (dark text/spinner) */
+.fixtures-page .hc-cal-wrap.is-loading .hc-loading,
+.fixtures-page .hc-cal-wrap.is-loading .hc-loading:before,
+.fixtures-page .hc-mini-panel__body.is-loading .hc-loading,
+.fixtures-page .hc-mini-panel__body.is-loading .hc-loading:before {
+  color: #111;
+}
+
+.hc-mini-section-title {
+  margin: 0 0 10px;
+  font-size: 18px;
+  font-weight: 800;
+  color: #111;
+}
+
+.hc-mini-link {
+  color: #ffd100;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.2px;
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.hc-mini-link:hover {
+  color: #fff;
+  text-decoration: underline;
 }
 
 /* each row */
@@ -29,16 +117,21 @@
   grid-template-columns: 64px 1fr 64px;
   gap: 8px;
   align-items: center;
-  padding: 10px 8px;
-
-  margin-bottom: 6px;
+  padding: 12px 10px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  border-radius: 8px;
+  margin-bottom: 10px;
   text-decoration: none;
   color: inherit;
   background: #fff;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+  min-height: 100px;
+  width: 100%;
 }
 
 .hc-mini-row:hover {
   background: #fafafa;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.16);
   text-decoration: none;
   color: inherit;
 }
@@ -58,16 +151,26 @@
 /* middle text */
 .hc-mini-row__date {
   text-align: center;
-  font-size: 13px;
+  font-size: 12px;
   font-weight: 700;
   color: #222;
   line-height: 1.1;
   margin-bottom: 4px;
 }
 
+.hc-mini-row__type {
+  text-align: center;
+  font-size: 12px;
+  font-weight: 900;
+  color: var(--bs-primary);
+  line-height: 1.15;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+}
+
 .hc-mini-row__meta {
   text-align: center;
-  font-size: 20px;
+  font-size: 18px;
   font-weight: 900;
   color: #111;
   line-height: 1.1;
@@ -80,18 +183,40 @@
 
 .hc-mini-row__match {
   text-align: center;
-  font-size: 14px;
-  font-weight: 900;
-  color: var(--bs-primary);
-  letter-spacing: 0.2px;
+  font-size: 13px;
+  font-weight: 800;
+  color: #0b7a34;
+  letter-spacing: 0.1px;
+}
+
+/* Equal-height cards within the card rows only */
+
+.hc-mini-row__extras {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.hc-mini-row__chip {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1.2;
+  color: #0a5f2a;
+  background: rgba(11, 122, 52, 0.12);
+  border: 1px solid rgba(11, 122, 52, 0.25);
 }
 
 .hc-mini-empty {
-  padding: 14px;
+  padding: 30px 0;
   text-align: center;
-  color: #fff;
+  color: #000;
   font-weight: 700;
-  // background: #fff;
+  background: #fff;
 }
 
 /* Make all 3 panels equal height in the row */
@@ -547,3 +672,4 @@
   pointer-events: none;
   color: #fff;
 }
+

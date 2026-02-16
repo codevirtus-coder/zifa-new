@@ -21,6 +21,23 @@
         $away_score = carbon_get_post_meta(get_the_ID(), 'fixture_country_away_score');
         $match_status = carbon_get_post_meta(get_the_ID(), 'fixture_match_status');
         $show_score = is_numeric($home_score) && is_numeric($away_score);
+
+        // ===== NEW: Extra match meta (safe fallbacks) =====
+        $match_number = carbon_get_post_meta(get_the_ID(), 'fixture_match_number') ?: '';
+        $gender       = carbon_get_post_meta(get_the_ID(), 'fixture_gender') ?: '';
+        $age_group    = carbon_get_post_meta(get_the_ID(), 'fixture_age_group') ?: '';
+
+        $gender_label = $gender ? ucfirst($gender) : '';
+        $age_label    = $age_group ? strtoupper($age_group) : '';
+
+        // ===== NEW: Taxonomy (if you added them) - safe if not set =====
+        $competition_terms = get_the_terms(get_the_ID(), 'zifa_competition');
+        $category_terms    = get_the_terms(get_the_ID(), 'zifa_match_category');
+        $age_terms         = get_the_terms(get_the_ID(), 'zifa_age_group');
+
+        $competition = (!is_wp_error($competition_terms) && !empty($competition_terms)) ? $competition_terms[0]->name : '';
+        $category    = (!is_wp_error($category_terms) && !empty($category_terms)) ? $category_terms[0]->name : '';
+        $age_tax     = (!is_wp_error($age_terms) && !empty($age_terms)) ? $age_terms[0]->name : '';
         ?>
 
         <!-- Match Header -->
@@ -30,22 +47,41 @@
                     <?php echo esc_html($home_name); ?> vs <?php echo esc_html($away_name); ?>
                 </h3>
                 <p>
-                    <strong><?php echo esc_html(carbon_get_post_meta(get_the_ID(), 'fixture_match_type')); ?></strong>
-                    <br>
-                    <?php echo esc_html(carbon_get_post_meta(get_the_ID(), 'fixture_stadium')); ?>
-                    <br>
-                    <small>
-                        <?php
-                        $raw_date = carbon_get_post_meta(get_the_ID(), 'fixture_date');
-                        if ($raw_date && DateTime::createFromFormat('Y-m-d', $raw_date)) {
-                            echo date('D j M Y', strtotime($raw_date));
-                        } else {
-                            echo 'Date TBA';
-                        }
-                        ?>
-                        at <?php echo esc_html(carbon_get_post_meta(get_the_ID(), 'fixture_time') ?: 'TBD'); ?>
-                    </small>
-                </p>
+                    <?php
+                    $match_type_old = carbon_get_post_meta(get_the_ID(), 'fixture_match_type') ?: '';
+                    $top_label = $competition ?: $match_type_old;
+
+                    $meta_bits = array_filter([
+                        $match_number ? $match_number : '',
+                        $gender_label ? $gender_label : '',
+                        ($age_tax ?: $age_label) ? ($age_tax ?: $age_label) : '',
+                        $category ? $category : '',
+                    ]);
+                    ?>
+
+                    <strong><?php echo esc_html($top_label); ?></strong>
+
+                    <?php if (!empty($meta_bits)) : ?>
+                <div style="margin-top:6px; font-size:14px; opacity:.85;">
+                    <?php echo esc_html(implode(' • ', $meta_bits)); ?>
+                </div>
+            <?php endif; ?>
+
+            <br>
+            <?php echo esc_html(carbon_get_post_meta(get_the_ID(), 'fixture_stadium')); ?>
+            <br>
+            <small>
+                <?php
+                $raw_date = carbon_get_post_meta(get_the_ID(), 'fixture_date');
+                if ($raw_date && DateTime::createFromFormat('Y-m-d', $raw_date)) {
+                    echo date('D j M Y', strtotime($raw_date));
+                } else {
+                    echo 'Date TBA';
+                }
+                ?>
+                at <?php echo esc_html(carbon_get_post_meta(get_the_ID(), 'fixture_time') ?: 'TBD'); ?>
+            </small>
+            </p>
             </div>
         </div>
 
